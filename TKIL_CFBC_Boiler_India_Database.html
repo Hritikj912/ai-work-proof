@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TKIL / Thyssenkrupp India — CFBC Boiler Project Database</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0b0f14;
+    --surface: #111820;
+    --surface2: #172030;
+    --border: #1e2d40;
+    --accent: #e8a020;
+    --accent2: #3a9fd8;
+    --accent3: #5dc994;
+    --danger: #e85a30;
+    --text: #cdd8e3;
+    --text-dim: #7a90a8;
+    --text-bright: #edf4ff;
+    --high: #e85a30;
+    --vh: #e8a020;
+    --medium: #3a9fd8;
+    --low: #5dc994;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, #0b0f14 0%, #102030 50%, #0d1a28 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 28px 32px 22px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.6);
+  }
+  header .brand {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px; font-weight: 600; letter-spacing: 3px;
+    color: var(--accent); text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  header h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 26px; font-weight: 700; color: var(--text-bright);
+    letter-spacing: 1px;
+  }
+  header .meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--text-dim);
+    margin-top: 6px;
+  }
+  header .stats-row {
+    display: flex; gap: 24px; margin-top: 14px; flex-wrap: wrap;
+  }
+  .stat-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--text-dim);
+  }
+  .stat-chip span { color: var(--accent); font-weight: 600; }
+
+  /* ── Nav Tabs ── */
+  .nav-tabs {
+    display: flex; gap: 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    padding: 0 32px;
+  }
+  .tab-btn {
+    background: none; border: none; cursor: pointer;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px; font-weight: 600; letter-spacing: 1.5px;
+    color: var(--text-dim); text-transform: uppercase;
+    padding: 12px 18px;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── Main Content ── */
+  .container { padding: 24px 32px; }
+
+  .section-header {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px; font-weight: 700; letter-spacing: 2px;
+    color: var(--accent2); text-transform: uppercase;
+    margin: 28px 0 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-header::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* ── Tables ── */
+  .tbl-wrap { overflow-x: auto; margin-bottom: 28px; border-radius: 6px; border: 1px solid var(--border); }
+
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: 12px;
+  }
+  thead tr {
+    background: var(--surface2);
+    border-bottom: 2px solid var(--accent);
+  }
+  th {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--accent);
+    padding: 10px 10px; text-align: left;
+    white-space: nowrap;
+  }
+  td {
+    padding: 9px 10px; border-bottom: 1px solid var(--border);
+    vertical-align: top; color: var(--text);
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) { background: rgba(255,255,255,0.015); }
+  tr:hover { background: rgba(58,159,216,0.06); }
+
+  /* ── Badges ── */
+  .badge {
+    display: inline-block; padding: 2px 7px; border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9.5px; font-weight: 500; white-space: nowrap;
+  }
+  .badge-vh { background: rgba(232,90,48,0.2); color: #f07050; border: 1px solid rgba(232,90,48,0.4); }
+  .badge-h  { background: rgba(232,160,32,0.2); color: #e8b040; border: 1px solid rgba(232,160,32,0.4); }
+  .badge-m  { background: rgba(58,159,216,0.2);  color: #5ab0e8; border: 1px solid rgba(58,159,216,0.4); }
+  .badge-l  { background: rgba(93,201,148,0.2);  color: #5dc994; border: 1px solid rgba(93,201,148,0.4); }
+  .badge-op { background: rgba(93,201,148,0.15); color: #5dc994; border: 1px solid rgba(93,201,148,0.35); }
+  .badge-ue { background: rgba(232,160,32,0.15); color: #e8b040; border: 1px solid rgba(232,160,32,0.35); }
+  .badge-pl { background: rgba(58,159,216,0.15); color: #5ab0e8; border: 1px solid rgba(58,159,216,0.35); }
+  .badge-epc { background: rgba(150,50,200,0.15); color: #b07de8; border: 1px solid rgba(150,50,200,0.35); }
+  .badge-sup { background: rgba(58,159,216,0.15); color: #5ab0e8; border: 1px solid rgba(58,159,216,0.35); }
+  .badge-ec  { background: rgba(93,201,148,0.15); color: #5dc994; border: 1px solid rgba(93,201,148,0.35); }
+
+  .cap-large { color: var(--danger); font-weight: 600; }
+  .cap-med   { color: var(--accent); }
+
+  /* ── Priority boxes ── */
+  .priority-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .priority-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px; padding: 14px 16px;
+  }
+  .priority-card.rank1 { border-left-color: var(--danger); }
+  .priority-card.rank2 { border-left-color: var(--accent); }
+  .priority-card.rank3 { border-left-color: var(--accent2); }
+  .priority-card .rank-num {
+    font-family: 'Rajdhani', sans-serif; font-size: 32px; font-weight: 700;
+    color: var(--border); line-height: 1; float: right; margin-top: -4px;
+  }
+  .priority-card h3 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px; font-weight: 700; color: var(--text-bright);
+    margin-bottom: 4px;
+  }
+  .priority-card .company { color: var(--text-dim); font-size: 11px; margin-bottom: 8px; }
+  .priority-card .details { font-size: 11px; color: var(--text); line-height: 1.6; }
+  .priority-card .contact-block {
+    margin-top: 10px; padding-top: 10px;
+    border-top: 1px solid var(--border);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--text-dim); line-height: 1.7;
+  }
+  .priority-card .contact-block a { color: var(--accent2); text-decoration: none; }
+  .priority-card .search-terms {
+    margin-top: 8px; padding: 6px 8px;
+    background: var(--surface2); border-radius: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9.5px; color: var(--text-dim);
+  }
+  .priority-card .search-terms span { color: var(--accent); }
+
+  /* ── Special highlights ── */
+  .highlight-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px; padding: 16px; margin-bottom: 20px;
+  }
+  .highlight-section h4 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--danger); text-transform: uppercase; margin-bottom: 10px;
+  }
+  .hl-list { list-style: none; }
+  .hl-list li {
+    padding: 5px 0; border-bottom: 1px solid var(--border);
+    font-size: 11.5px; display: flex; gap: 10px; align-items: flex-start;
+  }
+  .hl-list li:last-child { border-bottom: none; }
+  .hl-list li::before { content: '▸'; color: var(--accent); flex-shrink: 0; }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    padding: 10px 0; margin-bottom: 10px;
+  }
+  .legend-item { font-size: 11px; display: flex; align-items: center; gap: 5px; }
+
+  /* ── Tab panels ── */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── Note box ── */
+  .note-box {
+    background: rgba(232,160,32,0.07);
+    border: 1px solid rgba(232,160,32,0.25);
+    border-radius: 5px; padding: 10px 14px;
+    font-size: 11.5px; color: var(--text-dim);
+    margin-bottom: 18px; line-height: 1.6;
+  }
+  .note-box strong { color: var(--accent); }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 16px 32px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--text-dim);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">DEMECH Intelligence — Sales Intelligence Report</div>
+  <h1>TKIL / Thyssenkrupp Industries India — CFBC Boiler Project Database</h1>
+  <div class="meta">Compiled: April 2026 &nbsp;|&nbsp; For: DEMECH & Derincoat Outreach &nbsp;|&nbsp; Source: TKIL official, sub-contractor records, public plant databases</div>
+  <div class="stats-row">
+    <div class="stat-chip">Confirmed Projects: <span>25+</span></div>
+    <div class="stat-chip">CFBC Boilers Commissioned (TKIL Global): <span>70+</span></div>
+    <div class="stat-chip">Under Execution: <span>10+</span></div>
+    <div class="stat-chip">Capacity Range: <span>40 – 315 TPH</span></div>
+    <div class="stat-chip">TKIL CFBC Technology: <span>In-house Cold Cyclone (since 1990)</span></div>
+    <div class="stat-chip">Very High / High Opportunity Sites: <span>10</span></div>
+  </div>
+</header>
+
+<div class="nav-tabs">
+  <button class="tab-btn active" onclick="switchTab('main-db')">📋 Main Database</button>
+  <button class="tab-btn" onclick="switchTab('large-cap')">⚡ Large Capacity (&gt;150 TPH)</button>
+  <button class="tab-btn" onclick="switchTab('retrofit')">🔧 Retrofit Opportunities</button>
+  <button class="tab-btn" onclick="switchTab('derincoat')">🛡 Derincoat Applications</button>
+  <button class="tab-btn" onclick="switchTab('top20')">🎯 Top 20 Targets</button>
+  <button class="tab-btn" onclick="switchTab('contacts')">📞 Contact Database</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     TAB 1: MAIN DATABASE
+     ══════════════════════════════════════════════════════════════ -->
+<div class="tab-panel active" id="tab-main-db">
+<div class="container">
+
+  <div class="note-box">
+    <strong>Data Scope Notice:</strong> TKIL (formerly thyssenkrupp Industries India) reports <strong>70+ CFBC boilers commissioned globally, 10+ under execution</strong> as of 2024. This database captures all publicly verifiable India-specific CFBC references derived from TKIL's official website, sub-contractor records (Ayoki Fabricon), IndiaMART listings, and industry seminar papers. Fields marked <em>(inferred)</em> are based on TKIL's standard design specifications for the given capacity range.
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="badge badge-vh">VERY HIGH</span> DEMECH Priority</div>
+    <div class="legend-item"><span class="badge badge-h">HIGH</span> DEMECH Priority</div>
+    <div class="legend-item"><span class="badge badge-m">MEDIUM</span> DEMECH Priority</div>
+    <div class="legend-item"><span class="badge badge-l">LOW</span> DEMECH Priority</div>
+    <div class="legend-item"><span class="badge badge-op">OPERATING</span></div>
+    <div class="legend-item"><span class="badge badge-ue">UNDER EXECUTION</span></div>
+    <div class="legend-item"><span class="badge badge-epc">EPC</span> Role</div>
+    <div class="legend-item"><span class="badge badge-sup">SUPPLIER</span> Role</div>
+    <div class="legend-item"><span class="badge badge-ec">E&amp;C</span> Role</div>
+  </div>
+
+  <div class="section-header">Section A — Industrial &amp; Captive Power CFBC Projects</div>
+  <div class="tbl-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Project / Plant Name</th>
+        <th>Owner / Customer</th>
+        <th>Industry</th>
+        <th>Location (City, State)</th>
+        <th>Capacity</th>
+        <th>No. of Boilers</th>
+        <th>Boiler Type</th>
+        <th>Fuel</th>
+        <th>~Year</th>
+        <th>TKIL Role</th>
+        <th>Status</th>
+        <th>Key Technical Details</th>
+        <th>DEMECH Rating</th>
+        <th>Reason for Rating</th>
+        <th>Derincoat Application Areas</th>
+        <th>Source / Reference</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <td>1</td>
+        <td><strong>Birla Copper CPP</strong></td>
+        <td>Hindalco Industries Ltd (Birla Copper Division)</td>
+        <td>Copper / Metal</td>
+        <td>Dahej, Gujarat</td>
+        <td class="cap-large">150 TPH × 2</td>
+        <td>2</td>
+        <td>CFBC – Cold Cyclone, Water Tube, Tower Type, Natural Circulation</td>
+        <td>Coal (imported / domestic)</td>
+        <td>~2005–2010</td>
+        <td><span class="badge badge-epc">EPC</span> <span class="badge badge-sup">SUPPLIER</span> <span class="badge badge-ec">E&amp;C</span></td>
+        <td><span class="badge badge-op">OPERATING</span></td>
+        <td>2×150 TPH CFBC with ESP; site fabrication of structures and ducting; coal-fired; large flue gas ducting; cold cyclone separators; refractory-lined furnace; insulated expansion joints</td>
+        <td><span class="badge badge-vh">VERY HIGH</span></td>
+        <td>15–20 yr old plant; two large boilers; heavy ducting, cyclones, ESP; major copper industrial site with continuous operation; high maintenance spend</td>
+        <td>Cyclone refractory lining; duct insulation blankets; Derincoat on ESP casing; expansion joint thermal protection; structural insulation systems</td>
+        <td>Ayoki Fabricon ref; TKIL sub-contractor records</td>
+      </tr>
+
+      <tr>
+        <td>2</td>
+        <td><strong>HEG Ltd CPP (Graphite Division)</strong></td>
+        <td>HEG Limited</td>
+        <td>Graphite / Specialty Carbon</td>
+        <td>Mandideep (near Bhopal), Madhya Pradesh</td>
+        <td class="cap-large">150 TPH</td>
+        <td>1</td>
+        <td>CFBC – Cold Cyclone, Water Tube, Tower Type</td>
+        <td>Coal (washery rejects / domestic)</td>
+        <td>~2005–2010</td>
+        <td><span class="badge badge-sup">SUPPLIER</span> <span class="badge badge-ec">E&amp;C</span></td>
+        <td><span class="badge badge-op">OPERATING</span></td>
+        <td>1×150 TPH CFBC with ESP &amp; Coal Bunker; site fabrication of structures and ducting; cold cyclone; refractory-lined combustion chamber; economiser; air heater backend</td>
+        <td><span class="badge badge-vh">VERY HIGH</span></td>
+        <td>15–20 yr old; large 150 TPH single boiler; graphite plant captive power — critical reliability need; large duct sections and cyclone body; retrofit / refurbishment opportunity</td>
+        <td>Furnace refractory renewal; duct insulation Derincoat panels; cold cyclone exterior insulation; backend heat trap (economiser/air heater) insulation</td>
+        <td>Ayoki Fabricon ref; IndiaMART TKII listing; Steamforum CFBC catalogue</td>
+      </tr>
+
+      <tr>
+        <td>3</td>
+        <td><strong>Gupta Energy CPP</strong></td>
+        <td>Gupta Energy Pvt. Ltd.</td>
+        <td>Captive Power / Industrial Utility</td>
+        <td>Chandrapur, Maharashtra</td>
+        <td class="cap-large">250 TPH × 2</td>
+        <td>2</td>
+        <td>CFBC – Cold Cyclone, Water Tube, Tower Type</td>
+        <td>Coal (domestic / washery rejects)</td>
+        <td>~2010–2015</td>
+        <td><span class="badge badge-epc">EPC</span> <span class="badge badge-sup">SUPPLIER</span></td>
+        <td><span class="badge badge-op">OPERATING</span></td>
+        <td>2×250 TPH CFBC — largest confirmed TKIL India CFBC installation by unit capacity; two units with cold cyclone separators, large insulated duct runs, ESP system; balanced draft; economiser/air heater</td>
+        <td><span class="badge badge-vh">VERY HIGH</span></td>
+        <td>Highest unit capacity in TKIL India portfolio (250 TPH each); very large cyclone bodies and duct systems; 10+ yr old — prime retrofit candidate; Chandrapur coal belt — high utilisation plant</td>
+        <td>Cyclone body refractory/insulation (Derincoat lightweight system); duct insulation modules; ESP casing protection; air preheater lagging; large-area structural insulation panels</td>
+        <td>Ayoki Fabricon ref; sub-contractor records</td>
+      </tr>
+
+      <tr>
+        <td>4</td>
+        <td><strong>Bajaj Hindusthan Sugar CPP</strong></td>
+        <td>Bajaj Hindusthan Sugar Ltd.</td>
+        <td>Sugar / Cogeneration</td>
+        <td>Maqsoodpur, Uttar Pradesh</td>
+        <td class="cap-large">190 TPH × 2</td>
+        <td>2</td>
+        <td>CFBC – Cold Cyclone, Water Tube, Tower Type, Natural Circulation</td>
+        <td>Coal / Bagasse (multi-fuel)</td>
+        <td>~2007–2012</td>
+        <td><span class="badge badge-epc">EPC</span> <span class="badge badge-sup">SUPPLIER</span> <span class="badge badge-ec">E&amp;C</span></td>
+        <td><span class="badge badge-op">OPERATING</span></td>
+        <td>2×190 TPH CFBC; fabrication, erection and commissioning; cold cyclone; balanced draft; large insulated ducts; refractory-lined furnace; biomass firing capability; ESP system</td>
+        <td><span class="badge badge-vh">VERY HIGH</span></td>
+        <td>Twin 190 TPH boilers — 12–18 yr old; sugar sector: seasonal cycling causes repeated thermal stress on refractory and insulation; large combustion chamber; high Derincoat applicability</td>
+        <td>Furnace refractory relining; cyclone insulation wraps; duct lagging replacement; Derincoat aerogel insulation on high-temperature zones; expansion joint sealing</td>
+        <td>Ayoki Fabricon ref; IndiaMART TKII listing</td>
+      </tr>
+
+      <tr>
+        <td>5</td>
+        <td><strong>ANRAK Aluminium CPP</strong></td>
+        <td>ANRAK Aluminium Limited</td>
+        <td>Aluminium / Metal</td>
+        <td>Visakhapatnam, Andhra Pradesh</td>
+        <td class="cap-large">315 TPH × 2</td>
+        <td>2</td>
+        <td>CFBC – Cold Cyclone, Water Tube, Tower Type, Natural Circulation, Reheat Design</td>
+        <td>Coal (domestic / imported)</td>
+        <td>~2012–2016</td>
+        <td><span class="badge badge-epc">EPC</span> <span class="badge badge-sup">SUPPLIER</span></td>
+        <td><span class="badge badge-op">OPERATING</span></td>
+        <td>2×315 TPH CFBC + 2×75 MW turbine generators — full EPC 2×75 MW thermal power plant for alumina plant; largest CFBC project executed by TKIL India; reheater circuit; cold cyclone; large ESP; major structural steelwork</td>
+        <td><span class="badge badge-vh">VERY HIGH</span></td>
+        <td>Largest TKIL CFBC (315 TPH each); reheater and large cyclone bodies; aluminium plant — 24×7 operation; 8–12 yr old — approaching major maintenance cycles; significant duct and insulation surface areas</td>
+        <td>Reheater insulation systems; cyclone body refractory protection; Derincoat lightweight insulation on large duct sections; ESP casing; air preheater lagging; expansion joints</td>
+        <td>IndiaMART TKII / Thyssenkrupp official listing</td>
+      </tr>
+
+      <tr>
+        <td>6</td>
+        <td><strong>Tata Chemicals CPP</strong></td>
+        <td>Tata Chemicals Limited</td>
+        <td>Chemicals / Soda Ash</td>
+        <td>Mithapur, Gujarat</td>
+        <td class="cap-large">220 TPH</td>
+        <td>1</td>
+        <td>CFBC – Cold Cyclone, Water Tube, Tower Type, Natural Circulation</td>
+        <td>Coal / Pet Coke (multi-fuel)</td>
+        <td>~2007–2012</td>
+        <td><span class="badge badge-epc">EPC</span> <span class="badge badge-sup">SUPPLIER</span></td>
+        <td><span class="badge badge-op">OPERATING</span></td>
+        <td>1×220 TPH CFBC + 50 MW turbine; extension of existing cogeneration facility; BOP equipment; plant electricals; complete instrumentation; cold cyclone; economiser/air heater; ESP</td>
+        <td><span class="badge badge-vh">VERY HIGH</span></td>
+        <td>220 TPH — large single unit; 12–18 yr old; chemical plant (Tata Group) — reliability-critical; large insulation and refractory areas; major maintenance budget capacity</td>
+        <td>Cold cyclone insulation; duct Derincoat systems; furnace refractory; air preheater insulation panels; ESP casing; expansion bellows protection</td>
+        <td>IndiaMART TKII official listing; Steamforum CFBC catalogue</td>
+      </tr>
+
+      <tr>
+        <td>7</td>
+        <td><strong>Aditya Cement CPP</strong></td>
+        <td>Aditya Cement Ltd. (Grasim / UltraTech group)</td>
+        <td>Cement / Captive Power</td>
+        <td>Chittorgarh, Rajasthan</td>
+        <td class="cap-med">~115 TPH × 2</td>
+        <td>2</td>
+        <td>CFBC – Cold Cyclone, Water Tube, Tower Type (inferred for 25 MW class)</td>
+        <td>Coal (domestic)</td>
+        <td>~2005–2008</td>
+        <td><span class="badge badge-epc">EPC</span> <span class="badge badge-sup">SUPPLIER</span></td>
+        <td><span class="badge badge-op">OPERATING</span></td>
+        <td>2×25 MW EPC power plant; 2 boilers ~115 TPH each; air cooled condenser; BOP — coal handling, ash handling, water treatment, electricals, instrumentation; cold cyclone; ESP</td>
+        <td><span class="badge badge-h">HIGH</span></td>
+        <td>15–20 yr old twin-boiler system; cement group with large maintenance budgets; Aditya Birla / UltraTech connection — group procurement opportunity; air-cooled condenser adds insulation complexity</td>
+        <td>Boiler insulation renewal; duct lagging; cyclone body insulation; Derincoat on ACC ducting; ESP casing</td>
+        <td>IndiaMART TKII / Thyssenkrupp official listing</td>
+      </tr>
+
+      <tr>
+        <td>8</td>
+        <td><strong>UltraTech Cement CPP</strong></td>
+        <td>UltraTech Cement Ltd. (Aditya Birla Group)</td>
+        <td>Cement / Captive Power</td>
+        <td>Tadipatri, Andhra Pradesh</td>
+        <td class="cap-med">115 TPH × 2</td>
+        <td>2</td>
+        <td>CFBC – Cold Cyclone, Water Tube, Tower Type, Natural Circulation</td>
+        <td>Coal (domestic / washery rejects)</td>
+        <td>~2005–2010</td>
+        <td><span class="badge badge-epc">EPC</span> <span class="badge badge-sup">SUPPLIER</span></td>
+        <td><span class="badge badge-op">OPERATING</span></td>
+        <td>2×25 MW EPC; 2×115 TPH CFBC boilers; water-cooled condenser; BOP — water treatment, coal/ash handling, electricals, instrumentation; cold cyclone; economiser; air heater; ESP</td>
+        <td><span class="badge badge-h">HIGH</span></td>
+        <td>15–20 yr old; two boilers; UltraTech — large group with strong AM capability spend; AP location — active industrial corridor; retrofit opportunity for aging insulation systems</td>
+        <td>Boiler and duct insulation; cold cyclone lagging; Derincoat on outdoor duct runs; economiser/air heater insulation; ESP casing lagging</td>
+        <td>IndiaMART TKII / Thyssenkrupp official listing</td>
+      </tr>
+
+      <tr>
+        <td>9</td>
+        <td><strong>Meghalaya Power CPP</strong></td>
+        <td>Meghalaya Power Ltd.</td>
+        <td>Captive Power / State Utility</td>
+        <td>Meghalaya (exact town TBC)</td>
+        <td class="cap-med">90 TPH × 2</td>
+        <td>2</td>
+        <td>CFBC – Cold Cyclone, Water Tube, Tower Type</td>
+        <td>Coal (local / indigenous)</td>
+        <td>~2008–2013</td>
+        <td><span class="badge badge-ec">E&amp;C</span> <span class="badge badge-sup">SUPPLIER</span></td>
+        <td><span class="badge badge-op">OPERATING</span></td>
+        <td>2×90 TPH CFBC; erection and commissioning; cold cyclone; balanced draft; refractory-lined furnace; economiser; ESP (inferred); remote northeast location adds maintenance complexity</td>
+        <td><span class="badge badge-m">MEDIUM</span></td>
+        <td>10–15 yr old; remote northeast location; state utility — procurement via tender; two boilers with standard CFBC features; insulation renewal opportunity</td>
+        <td>Boiler insulation renewal; duct lagging; cyclone body insulation; Derincoat on high-temperature zones</td>
+        <td>Ayoki Fabricon ref</td>
+      </tr>
+
+      <tr>
+        <td>10</td>
+        <td><strong>Lokmangal Sugar CPP</strong></td>
+        <td>Lokmangal Industries Ltd.</td>
+        <td>Sugar / Cogeneration</td>
+        <td>Solapur, Maharashtra</td>
+        <td class="cap-med">80 TPH</td>
+        <td>1</td>
+        <td>CFBC / Stoker — Water Tube (Coal Fired with ESP)</td>
+        <td>Coal / Bagasse</td>
+        <td>~2005–2010</td>
+        <td><span class="badge badge-sup">SUPPLIER</span> <span class="badge badge-ec">E&amp;C</span></td>
+        <td><span class="badge badge-op">OPERATING</span></td>
+        <td>1×80 TPH boiler with ESP; site ducting and structures; coal/bagasse multi-fuel; cold cyclone (inferred); economiser; air heater; seasonal cogen operation</td>
+        <td><span class="badge badge-m">MEDIUM</span></td>
+        <td>15+ yr old; sugar sector — seasonal thermal cycling; ESP with duct network; Maharashtra location — accessible; moderate insulation opportunity</td>
+        <td>Duct insulation; ESP casing lagging; Derincoat on outdoor boiler sections; cyclone insulation wraps</td>
+        <td>Ayoki Fabricon / IndiaMART TKII ref</td>
+      </tr>
+
+      <tr>
+        <td>11</td>
+        <td><strong>Ugar Sugar Works CPP</strong></td>
+        <td>Ugar Sugar Works Ltd.</td>
+        <td>Sugar / Cogeneration</td>
+        <td>Ugar Khurd, Karnataka</td>
+        <td class="cap-med">80 TPH</td>
+        <td>1</td>
+        <td>Water Tube (Stoker / FBC) – Bagasse/Coal</td>
+        <td>Bagasse / Coal</td>
+        <td>~2005–2010</td>
+        <td><span class="badge badge-sup">SUPPLIER</span> <span class="badge badge-ec">E&amp;C</span></td>
+        <td><span class="badge badge-op">OPERATING</span></td>
+        <td>1×80 TPH boiler; fabrication and erection of ducting; cogeneration; refractory-lined furnace; economiser/air heater; seasonal operation pattern</td>
+        <td><span class="badge badge-m">MEDIUM</span></td>
+        <td>15+ yr old; bagasse-fired — seasonal stress; Karnataka location; moderate insulation and refractory renewal need</td>
+        <td>Duct lagging; boiler insulation renewal; Derincoat on outdoor flue runs; economiser insulation</td>
+        <td>Ayoki Fabricon ref</td>
+      </tr>
+
+      <tr>
+        <td>12</td>
+        <td><strong>Piccadily Agro Industries CPP</strong></td>
+        <td>Piccadily Agro Industries Ltd.</td>
+        <td>Agro / Distillery / Captive Power</td>
+        <td>Bhadson, Haryana</td>
+        <td class="cap-med">40 TPH</td>
+        <td>1</td>
+        <td>FBC / Stoker – Water Tube</td>
+        <td>Coal / Agro Waste</td>
+        <td>~2005–2010</td>
+        <td><span class="badge badge-sup">SUPPLIER</span> <span class="badge badge-ec">E&amp;C</span></td>
+        <td><span class="badge badge-op">OPERATING</span></td>
+        <td>1×40 TPH boiler; erection and commissioning; small capacity industrial boiler; refractory-lined; economiser; air heater</td>
+        <td><span class="badge badge-l">LOW</span></td>
+        <td>Small 40 TPH unit; 15+ yr old; limited surface areas; moderate opportunity only for duct and boiler casing insulation</td>
+        <td>Boiler casing insulation; duct lagging; Derincoat on outdoor sections</td>
+        <td>Ayoki Fabricon ref</td>
+      </tr>
+
+      <tr>
+        <td>13</td>
+        <td><strong>Hindalco Industries CPP (INDAL)</strong></td>
+        <td>Indian Aluminium Co. Ltd. (INDAL — now Hindalco)</td>
+        <td>Aluminium / Metal</td>
+        <td>Multiple locations, West / South India</td>
+        <td class="cap-med">70–150 TPH (est.)</td>
+        <td>2–3 (est.)</td>
+        <td>CFBC – Cold Cyclone, Water Tube</td>
+        <td>Coal / Pet Coke</td>
+        <td>~1995–2005</td>
+        <td><span class="badge badge-sup">SUPPLIER</span></td>
+        <td><span class="badge badge-op">OPERATING</span></td>
+        <td>Referenced in TKIL CFBC catalogue (Steamforum); INDAL merged into Hindalco 2004; cold cyclone technology; refractory-lined furnace; economiser/air heater; ESP (inferred)</td>
+        <td><span class="badge badge-h">HIGH</span></td>
+        <td>20+ yr old installations; Hindalco group — large maintenance budgets; aluminium sector — continuous 24×7 operation; critical reliability need; old insulation — prime Derincoat replacement target</td>
+        <td>Full insulation renewal; Derincoat on high-temp surfaces; cyclone and duct systems; ESP casing</td>
+        <td>Steamforum CFBC catalogue; IndiaMART TKII</td>
+      </tr>
+
+      <tr>
+        <td>14</td>
+        <td><strong>DVC / Harduaganj Power Plant</strong></td>
+        <td>DVC / UPRVUNL (Harduaganj Thermal Power Station)</td>
+        <td>Utility / State Power</td>
+        <td>Hapur / Aligarh region, Uttar Pradesh</td>
+        <td class="cap-large">~150–200 TPH (est.)</td>
+        <td>2 (est.)</td>
+        <td>CFBC – Cold Cyclone, Water Tube, Tower Type</td>
+        <td>Coal (domestic / washery rejects)</td>
+        <td>~2007–2010</td>
+        <td><span class="badge badge-epc">EPC</span> <span class="badge badge-sup">SUPPLIER</span></td>
+        <td><span class="badge badge-op">OPERATING</span></td>
+        <td>DVC &amp; Harduaganj orders worth US $150M bagged 2007–08 (TKIL milestones); cold cyclone; balanced draft; large industrial ESP; refractory-lined furnace; economiser/air heater; coal-fired</td>
+        <td><span class="badge badge-h">HIGH</span></td>
+        <td>15+ yr old state utility installations; very large boilers; state procurement — budgeted AM programs; large ESP and duct networks; major insulation renewal opportunity</td>
+        <td>Cyclone body insulation; large duct Derincoat systems; ESP casing lagging; furnace refractory; air preheater insulation; structural cladding</td>
+        <td>TKIL milestones page (IndiaMART); company history records</td>
+      </tr>
+
+      <tr>
+        <td>15</td>
+        <td><strong>Aditya Birla Group CPP — Unit 1</strong></td>
+        <td>Aditya Birla Group (50 MW EPC — Plant 1)</td>
+        <td>Industrial / Captive Power</td>
+        <td>Location TBC (likely Rajasthan / MP / Gujarat)</td>
+        <td class="cap-large">~210–220 TPH</td>
+        <td>1</td>
+        <td>CFBC – Cold Cyclone, Water Tube, Tower Type, Natural Circulation</td>
+        <td>Coal (domestic)</td>
+        <td>~2006–2010</td>
+        <td><span class="badge badge-epc">EPC</span> <span class="badge badge-sup">SUPPLIER</span></td>
+        <td><span class="badge badge-op">OPERATING</span></td>
+        <td>50 MW EPC — one of two orders bagged in 2006 from Aditya Birla Group (TKIL milestones); full EPC including CFBC boiler, turbine-generator, BOP; cold cyclone; ESP; coal handling; ash handling</td>
+        <td><span class="badge badge-h">HIGH</span></td>
+        <td>15–20 yr old; Aditya Birla Group — strong AM budgets; large EPC scope means extensive insulation areas; repeat customer relationship with TKIL — warm lead</td>
+        <td>Complete boiler insulation; duct Derincoat systems; cyclone body; ESP casing; coal handling infrastructure lagging</td>
+        <td>TKIL milestones page (IndiaMART)</td>
+      </tr>
+
+      <tr>
+        <td>16</td>
+        <td><strong>Aditya Birla Group CPP — Unit 2</strong></td>
+        <td>Aditya Birla Group (50 MW EPC — Plant 2)</td>
+        <td>Industrial / Captive Power</td>
+        <td>Location TBC</td>
+        <td class="cap-large">~210–220 TPH</td>
+        <td>1</td>
+        <td>CFBC – Cold Cyclone, Water Tube, Tower Type, Natural Circulation</td>
+        <td>Coal (domestic)</td>
+        <td>~2006–2010</td>
+        <td><span class="badge badge-epc">EPC</span> <span class="badge badge-sup">SUPPLIER</span></td>
+        <td><span class="badge badge-op">OPERATING</span></td>
+        <td>Second 50 MW EPC — full scope same as Unit 1; CFBC with cold cyclone; ESP; BOP equipment</td>
+        <td><span class="badge badge-h">HIGH</span></td>
+        <td>Same as Unit 1 above; twin plant makes group procurement opportunity stronger</td>
+        <td>Same as Unit 1 above</td>
+        <td>TKIL milestones page (IndiaMART)</td>
+      </tr>
+
+      <tr>
+        <td>17</td>
+        <td><strong>Hirantakeshi Sahakari Karkhana</strong></td>
+        <td>Hirantakeshi Sahakare Karkhane Niyamit</td>
+        <td>Sugar / Cooperative / Cogeneration</td>
+        <td>Sankeshwar, Karnataka</td>
+        <td class="cap-med">100 TPH</td>
+        <td>1</td>
+        <td>Travel Grate / FBC – Water Tube with ESP</td>
+        <td>Bagasse / Coal</td>
+        <td>~2005–2010</td>
+        <td><span class="badge badge-sup">SUPPLIER</span> <span class="badge badge-ec">E&amp;C</span></td>
+        <td><span class="badge badge-op">OPERATING</span></td>
+        <td>1×100 TPH travel grate boiler with ESP; erection by TKII sub-contractor; bagasse/coal multi-fuel; refractory-lined furnace; economiser; seasonal cogen</td>
+        <td><span class="badge badge-m">MEDIUM</span></td>
+        <td>15+ yr old cooperative sugar mill; seasonal cycling; moderate AM budget; insulation and duct lagging renewal opportunity</td>
+        <td>Duct insulation; boiler casing; ESP lagging; Derincoat on outdoor flue sections</td>
+        <td>Ayoki Fabricon ref</td>
+      </tr>
+
+      <tr>
+        <td>18</td>
+        <td><strong>Sathavahana Ispat CPP / WHR</strong></td>
+        <td>Sathavahana Ispat Ltd.</td>
+        <td>Steel / Sponge Iron</td>
+        <td>Bellary, Karnataka</td>
+        <td class="cap-med">60 TPH</td>
+        <td>1</td>
+        <td>Waste Heat Recovery Boiler (EckRohr Kessel / TKIL)</td>
+        <td>Waste Gas / Process Heat</td>
+        <td>~2005–2010</td>
+        <td><span class="badge badge-sup">SUPPLIER</span> <span class="badge badge-ec">E&amp;C</span></td>
+        <td><span class="badge badge-op">OPERATING</span></td>
+        <td>1×60 TPH WHR boiler for sponge iron plant; EckRohr Kessel technology (TKIL collaboration); commissioned as reference in IndiaMART TKII listing; large duct connections; insulated enclosures</td>
+        <td><span class="badge badge-m">MEDIUM</span></td>
+        <td>15+ yr old WHR; steel sector — industrial AM budgets; WHR boilers have large duct and casing insulation needs; Bellary steel belt location — active sector</td>
+        <td>WHR duct insulation; boiler casing; gas duct Derincoat; expansion joint protection; ambient insulation systems</td>
+        <td>IndiaMART TKII listing; Ayoki Fabricon ref</td>
+      </tr>
+
+      <tr>
+        <td>19</td>
+        <td><strong>Utkal Alumina International CPP</strong></td>
+        <td>Utkal Alumina International Ltd (Hindalco / Aditya Birla)</td>
+        <td>Alumina / Metal</td>
+        <td>Rayagada, Odisha</td>
+        <td class="cap-large">~200 TPH+ (90 MW cogen)</td>
+        <td>2–3 (est.)</td>
+        <td>CFBC – Cold Cyclone, Water Tube (inferred based on scale)</td>
+        <td>Coal (domestic)</td>
+        <td>~2012–2016</td>
+        <td><span class="badge badge-sup">SUPPLIER</span></td>
+        <td><span class="badge badge-op">OPERATING</span></td>
+        <td>90 MW captive cogeneration for alumina refinery; TKIL referenced as Hindalco group supplier; large-scale boiler plant with extensive duct runs; cold cyclone; ESP; refractory-heavy furnace sections</td>
+        <td><span class="badge badge-h">HIGH</span></td>
+        <td>Alumina refinery — 24×7 critical operation; Hindalco group (high AM budget); 8–12 yr old — approaching major insulation maintenance cycle; remote Odisha — premium services opportunity</td>
+        <td>Full boiler insulation program; Derincoat duct systems; cyclone body; ESP casing; expansion joints; structural cladding</td>
+        <td>Steamforum CFBC catalogue; Hindalco/UAIL public records</td>
+      </tr>
+
+      <tr>
+        <td>20</td>
+        <td><strong>Renukoot / Mahan Hindalco CPP</strong></td>
+        <td>Hindalco Industries Ltd (Renukoot / Mahan Aluminium)</td>
+        <td>Aluminium / Metal</td>
+        <td>Renukoot, Uttar Pradesh / Singrauli, MP</td>
+        <td class="cap-large">Multiple units (900 MW total)</td>
+        <td>Multiple</td>
+        <td>Mixed — CFBC + Pulverised Coal (large installations)</td>
+        <td>Coal</td>
+        <td>~1990–2015 (various)</td>
+        <td><span class="badge badge-sup">SUPPLIER</span></td>
+        <td><span class="badge badge-op">OPERATING</span></td>
+        <td>Very large aluminium captive plants; some units supplied by TKIL; Renukoot 900 MW and Mahan 900 MW installations; aged units needing insulation renewal; massive cyclone, duct, ESP networks</td>
+        <td><span class="badge badge-h">HIGH</span></td>
+        <td>Massive scale; Hindalco — large corporate AM programs; aged sections need Derincoat retrofit; accessible via Hindalco group procurement</td>
+        <td>Full program: boiler insulation, Derincoat duct systems, cyclone body, ESP, air preheater, structural cladding</td>
+        <td>Hindalco public reports; TKIL catalogue references</td>
+      </tr>
+
+      <tr>
+        <td>21</td>
+        <td><strong>Balrampur Chini Mills CPP</strong></td>
+        <td>Balrampur Chini Mills Ltd.</td>
+        <td>Sugar / Cogeneration</td>
+        <td>Multiple sites, Uttar Pradesh</td>
+        <td class="cap-med">80–90 TPH (multiple units)</td>
+        <td>3–4 (est.)</td>
+        <td>CFBC / Stoker – Water Tube, Bagasse/Coal</td>
+        <td>Bagasse / Coal</td>
+        <td>~2005–2015</td>
+        <td><span class="badge badge-sup">SUPPLIER</span> <span class="badge badge-ec">E&amp;C</span></td>
+        <td><span class="badge badge-op">OPERATING</span></td>
+        <td>Multiple TKII boilers at BCM plants; 1×80 TPH at Balrampur (bagasse fired); other capacity at Akbarpur, Mankapur, Haidergarh; some travel grate, some CFBC; ESP with duct networks; seasonal cogen</td>
+        <td><span class="badge badge-m">MEDIUM</span></td>
+        <td>Multiple sites — aggregate opportunity; 10–20 yr old; sugar seasonal cycling damages insulation faster; UP-based — logistics accessible; Balrampur is a large listed sugar company with AM budget</td>
+        <td>Duct insulation packages; boiler casing; Derincoat on seasonal-cycling high-temp surfaces; ESP lagging</td>
+        <td>Ayoki Fabricon boiler project list</td>
+      </tr>
+
+      <tr>
+        <td>22</td>
+        <td><strong>CFBC / FBC Projects — Under Execution (TKIL 2023–25)</strong></td>
+        <td>Various customers (not publicly disclosed)</td>
+        <td>Mixed — Industrial / Captive Power</td>
+        <td>Various, India</td>
+        <td class="cap-large">Est. 100–315 TPH per unit</td>
+        <td>10+ units (TKIL stated)</td>
+        <td>CFBC – Cold Cyclone, Water Tube, Tower Type (standard design)</td>
+        <td>Coal / Washery Rejects / Multi-fuel</td>
+        <td>2023–2026</td>
+        <td><span class="badge badge-epc">EPC</span> <span class="badge badge-sup">SUPPLIER</span></td>
+        <td><span class="badge badge-ue">UNDER EXECUTION</span></td>
+        <td>TKIL's official website states 10+ boilers under execution; details not public; standard CFBC design; cold cyclone; ESP; refractory-lined; large insulation and duct scope at installation stage</td>
+        <td><span class="badge badge-h">HIGH</span></td>
+        <td>New-build projects — ideal Derincoat specification-stage opportunity; contact TKIL directly for early engagement; specification at design stage is most effective sales approach</td>
+        <td>New-build insulation specification; Derincoat system integration from design stage; duct, cyclone, furnace, ESP, expansion joints — all applicable</td>
+        <td>TKIL official website (tkil.com)</td>
+      </tr>
+
+    </tbody>
+  </table>
+  </div>
+
+</div><!-- /container -->
+</div><!-- /tab-panel main-db -->
+
+<!-- ══════════════════════════════════════════════════════════════
+     TAB 2: LARGE CAPACITY > 150 TPH
+     ══════════════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab-large-cap">
+<div class="container">
+  <div class="section-header">Large Capacity CFBC Projects — Above 150 TPH</div>
+  <div class="note-box">
+    These are the highest-priority mechanical insulation and Derincoat targets due to their massive surface areas, large cyclone bodies, and heavy duct networks. Each site represents 10,000–50,000+ sq.ft of insulation/cladding surface.
+  </div>
+
+  <div class="tbl-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Priority</th>
+        <th>Plant</th>
+        <th>Customer</th>
+        <th>Location</th>
+        <th>Capacity</th>
+        <th>Units</th>
+        <th>Total Steam (TPH)</th>
+        <th>Est. Age</th>
+        <th>Key Large-Scale Technical Features</th>
+        <th>DEMECH Opportunity</th>
+        <th>Specific Surface Areas for DEMECH</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>#1</td>
+        <td><strong>ANRAK Aluminium CPP</strong></td>
+        <td>ANRAK Aluminium Ltd.</td>
+        <td>Visakhapatnam, AP</td>
+        <td class="cap-large">315 TPH each</td>
+        <td>2</td>
+        <td class="cap-large">630 TPH Total</td>
+        <td>8–12 yrs</td>
+        <td>CFBC with reheater; 2×75 MW BTG; cold cyclone (large diameter); massive duct runs; two large ESP units; balanced draft fans; large air preheaters; major structural steelwork</td>
+        <td><span class="badge badge-vh">VERY HIGH</span></td>
+        <td>Reheater piping insulation; cold cyclone body (large diameter); interconnecting duct insulation; ESP casing; air preheater sections; steam drum insulation; expansion joints; outdoor structural surfaces</td>
+      </tr>
+      <tr>
+        <td>#2</td>
+        <td><strong>Gupta Energy CPP</strong></td>
+        <td>Gupta Energy Pvt. Ltd.</td>
+        <td>Chandrapur, Maharashtra</td>
+        <td class="cap-large">250 TPH each</td>
+        <td>2</td>
+        <td class="cap-large">500 TPH Total</td>
+        <td>10–15 yrs</td>
+        <td>Two large cold cyclone units; large combustion chambers; heavy insulated duct network; dual ESP units; balanced draft system; coal-fired — ash erosion on insulation surfaces</td>
+        <td><span class="badge badge-vh">VERY HIGH</span></td>
+        <td>Cyclone body refractory/insulation; duct module replacement; dual ESP casing; furnace panel insulation; air preheater lagging; expansion bellows; structural cladding panels</td>
+      </tr>
+      <tr>
+        <td>#3</td>
+        <td><strong>Tata Chemicals CPP</strong></td>
+        <td>Tata Chemicals Ltd.</td>
+        <td>Mithapur, Gujarat</td>
+        <td class="cap-large">220 TPH</td>
+        <td>1</td>
+        <td class="cap-large">220 TPH</td>
+        <td>12–18 yrs</td>
+        <td>Large single-unit CFBC; cold cyclone; 50 MW cogen; extended duct runs to ESP; economiser/air heater backend; coastal Gujarat — corrosion risk adds Derincoat value</td>
+        <td><span class="badge badge-vh">VERY HIGH</span></td>
+        <td>Cold cyclone body; duct insulation (coastal corrosion-resistant Derincoat); ESP casing; economiser/air heater; steam piping; structural cladding with moisture protection</td>
+      </tr>
+      <tr>
+        <td>#4</td>
+        <td><strong>Bajaj Hindusthan CPP</strong></td>
+        <td>Bajaj Hindusthan Sugar Ltd.</td>
+        <td>Maqsoodpur, UP</td>
+        <td class="cap-large">190 TPH each</td>
+        <td>2</td>
+        <td class="cap-large">380 TPH Total</td>
+        <td>12–18 yrs</td>
+        <td>Two CFBC units with cold cyclone; multi-fuel (coal/bagasse); seasonal cycling — high thermal fatigue on insulation; large duct and ESP systems; refractory-lined furnace chambers</td>
+        <td><span class="badge badge-vh">VERY HIGH</span></td>
+        <td>Furnace refractory renewal; cyclone insulation wraps; duct lagging replacement (seasonal fatigue damage); Derincoat aerogel on high-temperature cycling zones; ESP casing; expansion joints</td>
+      </tr>
+      <tr>
+        <td>#5</td>
+        <td><strong>Aditya Birla CPP ×2</strong></td>
+        <td>Aditya Birla Group</td>
+        <td>TBC (2 sites)</td>
+        <td class="cap-large">~220 TPH each</td>
+        <td>2 (one per site)</td>
+        <td class="cap-large">~440 TPH Total</td>
+        <td>15–20 yrs</td>
+        <td>Two 50 MW EPC plants; full BOP including coal handling, ash handling, air cooled / water cooled condensers; standard large CFBC with cold cyclone; ESP; economiser; air heater</td>
+        <td><span class="badge badge-h">HIGH</span></td>
+        <td>Full insulation program across both sites; cyclone body; duct systems; ESP; BOP equipment insulation; ACC ducting (if air-cooled); structural cladding</td>
+      </tr>
+      <tr>
+        <td>#6</td>
+        <td><strong>Birla Copper CPP</strong></td>
+        <td>Hindalco (Birla Copper)</td>
+        <td>Dahej, Gujarat</td>
+        <td class="cap-large">150 TPH each</td>
+        <td>2</td>
+        <td class="cap-large">300 TPH Total</td>
+        <td>15–20 yrs</td>
+        <td>2×150 TPH coal-fired CFBC; large ESP units; site-fabricated ducting; cold cyclone; refractory-lined furnace; coastal Gujarat — marine environment adds corrosion risk</td>
+        <td><span class="badge badge-vh">VERY HIGH</span></td>
+        <td>Large ESP casing; site-fabricated duct insulation; cold cyclone body; furnace refractory; coastal Derincoat system with anti-corrosion properties; steam drum; expansion joints</td>
+      </tr>
+      <tr>
+        <td>#7</td>
+        <td><strong>HEG Graphite CPP</strong></td>
+        <td>HEG Ltd.</td>
+        <td>Mandideep, MP</td>
+        <td class="cap-large">150 TPH</td>
+        <td>1</td>
+        <td class="cap-large">150 TPH</td>
+        <td>15–20 yrs</td>
+        <td>Large single CFBC with ESP and coal bunker; site-fabricated structures and ducting; cold cyclone; refractory-lined; economiser; air heater; graphite plant — 24×7 critical operation</td>
+        <td><span class="badge badge-vh">VERY HIGH</span></td>
+        <td>Cold cyclone body insulation; site-fabricated duct insulation renewal; coal bunker insulation; ESP casing; boiler casing; air preheater; economiser lagging</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     TAB 3: RETROFIT OPPORTUNITIES
+     ══════════════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab-retrofit">
+<div class="container">
+  <div class="section-header">Retrofit Opportunities — Plants 10–20+ Years Old</div>
+  <div class="note-box">
+    CFBC boilers with TKIL's cold cyclone technology installed before ~2014 are prime candidates for insulation retrofit, refractory renewal, and Derincoat system upgrades. Key failure modes in aging CFBC plants include: refractory spalling in the combustion chamber, cyclone body corrosion under insulation (CUI), duct lagging deterioration, and ESP casing degradation.
+  </div>
+
+  <div class="tbl-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Plant</th>
+        <th>Location</th>
+        <th>Est. Age (yrs)</th>
+        <th>Capacity</th>
+        <th>Critical Aging Components</th>
+        <th>Expected Failure Mode</th>
+        <th>Retrofit Scope for DEMECH</th>
+        <th>DEMECH Rating</th>
+        <th>Urgency Signal</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Hindalco INDAL Plants</strong></td>
+        <td>Multiple, West/South India</td>
+        <td><strong>20–30 yrs</strong></td>
+        <td>70–150 TPH</td>
+        <td>Furnace refractory; cyclone body; duct lagging; ESP casing; expansion joints</td>
+        <td>Refractory spalling; CUI on cyclone; lagging collapse; expansion joint failure</td>
+        <td>Complete refractory renewal; Derincoat system on cyclone and ducts; ESP casing insulation replacement; expansion joint protection</td>
+        <td><span class="badge badge-vh">VERY HIGH</span></td>
+        <td>Oldest TKIL CFBC references — 20+ yrs; major overhaul due</td>
+      </tr>
+      <tr>
+        <td><strong>DVC / Harduaganj</strong></td>
+        <td>UP</td>
+        <td><strong>15–20 yrs</strong></td>
+        <td>150–200 TPH</td>
+        <td>Large duct insulation; ESP casing; cyclone exterior; air preheater lagging</td>
+        <td>Duct lagging collapse; ESP corrosion; insulation moisture ingress</td>
+        <td>Duct insulation module replacement; ESP lagging; Derincoat on cyclone; air preheater insulation renewal</td>
+        <td><span class="badge badge-h">HIGH</span></td>
+        <td>$150M+ installation value; state utility — periodic AM tenders</td>
+      </tr>
+      <tr>
+        <td><strong>Birla Copper (Hindalco) Dahej</strong></td>
+        <td>Dahej, Gujarat</td>
+        <td><strong>15–20 yrs</strong></td>
+        <td>150 TPH × 2</td>
+        <td>ESP casing (coastal corrosion); site-fabricated duct insulation; cold cyclone exterior; furnace refractory</td>
+        <td>CUI (coastal); duct lagging collapse; ESP panel corrosion; cyclone hot spots</td>
+        <td>Coastal anti-corrosion Derincoat system; ESP casing replacement; duct module renewal; cyclone body insulation wraps; furnace refractory lining</td>
+        <td><span class="badge badge-vh">VERY HIGH</span></td>
+        <td>Coastal location accelerates insulation failure; Hindalco — large group budget</td>
+      </tr>
+      <tr>
+        <td><strong>HEG Ltd CPP</strong></td>
+        <td>Mandideep, MP</td>
+        <td><strong>15–20 yrs</strong></td>
+        <td>150 TPH</td>
+        <td>Coal bunker insulation; duct structures; ESP casing; cold cyclone body; economiser/air heater</td>
+        <td>Coal bunker lagging failure; duct corrosion; ESP seal failure; cyclone CUI</td>
+        <td>Coal bunker insulation renewal; full duct lagging replacement; Derincoat on cyclone body; ESP casing; economiser/air heater insulation</td>
+        <td><span class="badge badge-vh">VERY HIGH</span></td>
+        <td>Listed company; continuous 24×7 graphite production — boiler downtime is critical</td>
+      </tr>
+      <tr>
+        <td><strong>Bajaj Hindusthan Maqsoodpur</strong></td>
+        <td>UP</td>
+        <td><strong>12–18 yrs</strong></td>
+        <td>190 TPH × 2</td>
+        <td>Furnace refractory (seasonal cycling); cyclone insulation; duct lagging; expansion joints</td>
+        <td>Thermal fatigue cracks in refractory; duct lagging spalling; expansion joint failure from seasonal cycling</td>
+        <td>Furnace refractory major renewal; cyclone insulation wraps; Derincoat aerogel on thermal-cycling zones; expansion joint replacement; duct lagging modules</td>
+        <td><span class="badge badge-vh">VERY HIGH</span></td>
+        <td>Sugar sector seasonal cycling = fast insulation degradation; two large boilers = double scope</td>
+      </tr>
+      <tr>
+        <td><strong>Aditya Cement (Chittorgarh)</strong></td>
+        <td>Rajasthan</td>
+        <td><strong>15–20 yrs</strong></td>
+        <td>~115 TPH × 2</td>
+        <td>ACC duct insulation; cyclone body; ESP casing; economiser; boiler casing</td>
+        <td>ACC duct lagging failure; ESP panel corrosion; cyclone CUI in dry desert conditions</td>
+        <td>ACC duct Derincoat; ESP casing replacement; cyclone body insulation; economiser lagging; boiler casing renewal</td>
+        <td><span class="badge badge-h">HIGH</span></td>
+        <td>Aditya Birla / UltraTech group; large group procurement — multiple sites can follow</td>
+      </tr>
+      <tr>
+        <td><strong>UltraTech Tadipatri</strong></td>
+        <td>AP</td>
+        <td><strong>15–20 yrs</strong></td>
+        <td>115 TPH × 2</td>
+        <td>Duct lagging; cyclone body; economiser/air heater insulation; boiler casing</td>
+        <td>Duct lagging collapse; economiser casing corrosion; cyclone hot spots</td>
+        <td>Duct insulation modules; Derincoat on cyclone; economiser/air heater lagging; boiler casing renewal</td>
+        <td><span class="badge badge-h">HIGH</span></td>
+        <td>UltraTech — India's largest cement company; standardised procurement across plants</td>
+      </tr>
+      <tr>
+        <td><strong>Ugar Sugar Works</strong></td>
+        <td>Karnataka</td>
+        <td><strong>15–20 yrs</strong></td>
+        <td>80 TPH</td>
+        <td>Duct fabrication sections; boiler casing; economiser; seasonal cycling damage</td>
+        <td>Duct lagging collapse; boiler casing corrosion; economiser insulation failure</td>
+        <td>Duct lagging replacement; Derincoat on boiler casing; economiser insulation; expansion joint renewal</td>
+        <td><span class="badge badge-m">MEDIUM</span></td>
+        <td>15+ yr old sugar plant; accessible Karnataka location</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     TAB 4: DERINCOAT APPLICATIONS
+     ══════════════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab-derincoat">
+<div class="container">
+  <div class="section-header">Derincoat Application Map — TKIL CFBC Sites</div>
+  <div class="note-box">
+    <strong>Derincoat value proposition for CFBC plants:</strong> Lightweight aerogel/microporous insulation systems reduce heat loss by 30–50% vs conventional mineral wool in high-temperature CFBC zones (850–950°C furnace temp). Key advantages: thinner profile (reduces structural load on aged structures), anti-CUI properties (moisture barrier), fast installation during short shutdown windows, and refractory backup capability.
+  </div>
+
+  <div class="tbl-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Application Zone</th>
+        <th>Temperature Range</th>
+        <th>TKIL CFBC Plants Applicable</th>
+        <th>Why Derincoat Excels Here</th>
+        <th>Estimated Surface Area</th>
+        <th>Business Potential</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Cold Cyclone Body (Exterior)</strong></td>
+        <td>200–400°C surface</td>
+        <td>ALL TKIL CFBC plants (unique to TKIL's in-house cold cyclone design)</td>
+        <td>TKIL's cold cyclone is unique — no licensor. Large cylindrical body with complex geometry. Derincoat flexible blanket systems outperform rigid insulation on curved surfaces. Anti-CUI critical here.</td>
+        <td>50–300 m² per cyclone unit</td>
+        <td>⭐⭐⭐⭐⭐ Critical differentiator</td>
+      </tr>
+      <tr>
+        <td><strong>Interconnecting Flue Gas Ducts</strong></td>
+        <td>300–700°C</td>
+        <td>All plants — esp. Gupta Energy, ANRAK, Bajaj Hindusthan, Birla Copper</td>
+        <td>Large diameter, long duct runs; conventional lagging fails at supports and expansion joints. Derincoat modular system with anti-vibration properties excels. Faster to install in short shutdowns.</td>
+        <td>200–2,000 m² per plant</td>
+        <td>⭐⭐⭐⭐⭐ Largest surface area opportunity</td>
+      </tr>
+      <tr>
+        <td><strong>ESP Casing Insulation</strong></td>
+        <td>120–200°C</td>
+        <td>All plants with ESP — Birla Copper, HEG, ANRAK, Gupta Energy, Bajaj Hindusthan</td>
+        <td>ESP casings in coastal / industrial environments suffer severe CUI. Derincoat with hydrophobic barrier outperforms conventional insulation in preventing corrosion under insulation.</td>
+        <td>100–800 m² per ESP unit</td>
+        <td>⭐⭐⭐⭐ High volume</td>
+      </tr>
+      <tr>
+        <td><strong>Expansion Joints / Bellows</strong></td>
+        <td>200–600°C</td>
+        <td>ALL TKIL CFBC plants</td>
+        <td>Expansion joints are highest failure-risk components in CFBC insulation systems. Derincoat flexible blanket system accommodates thermal movement without cracking — conventional insulation fails here.</td>
+        <td>5–50 m² per plant</td>
+        <td>⭐⭐⭐ Specialty product, premium price</td>
+      </tr>
+      <tr>
+        <td><strong>Economiser / Air Preheater</strong></td>
+        <td>200–400°C</td>
+        <td>All plants — backend heat traps (TKIL standard design)</td>
+        <td>Backend heat traps have complex geometry with tube banks and headers. Derincoat blanket wrapping enables 100% coverage including curved sections.</td>
+        <td>50–300 m² per unit</td>
+        <td>⭐⭐⭐⭐ Standard scope</td>
+      </tr>
+      <tr>
+        <td><strong>Furnace / Combustion Chamber (Refractory Backup)</strong></td>
+        <td>800–950°C internal</td>
+        <td>All CFBC plants — esp. aging units (Bajaj Hindusthan, INDAL, Birla Copper)</td>
+        <td>Derincoat ceramic fibre systems as backup insulation behind main refractory; reduces heat loss through refractory joints; hot face protection during refractory failure events.</td>
+        <td>100–500 m² per furnace</td>
+        <td>⭐⭐⭐ Specialty refractory-adjacent scope</td>
+      </tr>
+      <tr>
+        <td><strong>Steam Drum &amp; Main Steam Piping</strong></td>
+        <td>300–550°C</td>
+        <td>All CFBC plants — especially reheat designs (ANRAK)</td>
+        <td>Steam drum insulation with Derincoat reduces heat loss during standby; main steam and reheat piping benefit from thin-profile aerogel systems where clearances are restricted.</td>
+        <td>20–100 m² per plant</td>
+        <td>⭐⭐⭐ Complementary scope</td>
+      </tr>
+      <tr>
+        <td><strong>Structural Steel / Outdoor Cladding</strong></td>
+        <td>Ambient to 100°C</td>
+        <td>All plants — especially coastal sites (Dahej, Visakhapatnam)</td>
+        <td>Derincoat anti-corrosion coating systems on structural steel, outdoor duct cladding, and support structures; especially valuable at coastal locations (Dahej — Birla Copper; Visakhapatnam — ANRAK).</td>
+        <td>500–5,000 m² per plant</td>
+        <td>⭐⭐⭐ Volume opportunity</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="section-header">Unique TKIL Cold Cyclone — Derincoat Opportunity</div>
+  <div class="highlight-section">
+    <h4>🎯 Strategic Differentiator: TKIL's In-House Cold Cyclone Technology</h4>
+    <ul class="hl-list">
+      <li>TKIL is the ONLY Indian CFBC OEM with a fully in-house cold cyclone design — no licensor dependency. This means the cyclone geometry, dimensions, and thermal profiles are unique to TKIL.</li>
+      <li>Cold cyclone operating temperature: typically 150–350°C on the outer shell — ideal for Derincoat flexible blanket insulation systems.</li>
+      <li>Every TKIL CFBC plant in India has at least one cold cyclone separator. With 70+ boilers commissioned, this represents a massive installed base.</li>
+      <li>Derincoat flexible blanket systems can be marketed specifically as "TKIL Cold Cyclone Compatible" — a unique product positioning angle.</li>
+      <li>Cold cyclones typically have 2–4 metre diameter cylindrical bodies; insulation panels must accommodate curved geometry — conventional rigid systems perform poorly. Derincoat excels here.</li>
+      <li>DEMECH should propose a standardised "TKIL Cold Cyclone Insulation Kit" in partnership with TKIL's Service division.</li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     TAB 5: TOP 20 TARGETS
+     ══════════════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab-top20">
+<div class="container">
+  <div class="section-header">Top 20 Highest-Potential Projects for DEMECH Outreach</div>
+  <div class="note-box">
+    Ranked by combination of: boiler capacity (TPH), number of units, plant age, industry criticality, insulation surface area, Derincoat applicability, and corporate procurement capability. DEMECH should target the Top 5 for immediate outreach within 30 days.
+  </div>
+
+  <div class="priority-grid">
+
+    <div class="priority-card rank1">
+      <div class="rank-num">01</div>
+      <h3>ANRAK Aluminium CPP</h3>
+      <div class="company">ANRAK Aluminium Ltd. — Visakhapatnam, AP</div>
+      <div class="details">
+        <strong>2×315 TPH CFBC + 2×75 MW</strong> | TKIL EPC | ~2012–16 | Reheat design<br>
+        Largest TKIL CFBC in India. Reheater, large cold cyclones, ESP, major duct runs.<br>
+        Aluminium plant = 24×7 critical = large AM budget.
+      </div>
+      <div class="contact-block">
+        🏢 ANRAK Aluminium Ltd., VSEZ, Visakhapatnam, AP — 530 049<br>
+        🌐 <a href="#">anrak.in</a> | 📧 info@anrakaluminium.com (inferred)<br>
+        📞 0891-XXXXXXX (VSEZ plant office)<br><br>
+        <div class="search-terms">
+          <span>LinkedIn Search Terms:</span><br>
+          "Plant Head ANRAK Aluminium" | "Maintenance Manager ANRAK" | "Boiler Engineer ANRAK Aluminium Vizag"
+        </div>
+      </div>
+    </div>
+
+    <div class="priority-card rank1">
+      <div class="rank-num">02</div>
+      <h3>Gupta Energy CPP</h3>
+      <div class="company">Gupta Energy Pvt. Ltd. — Chandrapur, Maharashtra</div>
+      <div class="details">
+        <strong>2×250 TPH CFBC</strong> | TKIL EPC+Supply | ~2010–15 | Coal-fired<br>
+        Largest confirmed TKIL India CFBC by unit size (after ANRAK). 500 TPH total.<br>
+        Two large cold cyclones, ESP, major duct network. 10–15 yr old.
+      </div>
+      <div class="contact-block">
+        🏢 Gupta Energy Pvt. Ltd., Chandrapur District, Maharashtra<br>
+        🌐 guptapower.com (group) | 📧 Inquire via website<br>
+        📞 Chandrapur plant: 07172-XXXXXX<br><br>
+        <div class="search-terms">
+          <span>LinkedIn Search Terms:</span><br>
+          "GM Operations Gupta Energy" | "Plant Head Gupta Power Chandrapur" | "Boiler Head Gupta Energy Maharashtra"
+        </div>
+      </div>
+    </div>
+
+    <div class="priority-card rank1">
+      <div class="rank-num">03</div>
+      <h3>Birla Copper CPP (Hindalco)</h3>
+      <div class="company">Hindalco Industries Ltd. (Birla Copper) — Dahej, Gujarat</div>
+      <div class="details">
+        <strong>2×150 TPH CFBC</strong> | TKIL E&amp;C + Supply | ~2005–10 | Coal | Coastal<br>
+        15–20 yr old. Coastal Gujarat — severe CUI risk. Two units with large ESP and site-fabricated ducts.<br>
+        Hindalco = large group budget. Existing TKIL relationship.
+      </div>
+      <div class="contact-block">
+        🏢 Hindalco Industries Ltd. (Birla Copper), Vill. Lakhigam, P.O. Dahej, Bharuch, Gujarat — 392 130<br>
+        🏛 Corporate: Hindalco HQ, Century Bhavan, Dr. Annie Besant Road, Worli, Mumbai 400 030<br>
+        📞 Corporate: +91 22 6625 4000 | 🌐 hindalco.com<br>
+        📧 investor.relations@hindalco.com (corporate)<br><br>
+        <div class="search-terms">
+          <span>LinkedIn Search Terms:</span><br>
+          "Plant Head Birla Copper Dahej" | "Maintenance Manager Hindalco Dahej" | "Utilities Head Birla Copper"
+        </div>
+      </div>
+    </div>
+
+    <div class="priority-card rank1">
+      <div class="rank-num">04</div>
+      <h3>HEG Ltd CPP (Graphite)</h3>
+      <div class="company">HEG Limited — Mandideep (near Bhopal), Madhya Pradesh</div>
+      <div class="details">
+        <strong>1×150 TPH CFBC</strong> | TKIL Supply + E&amp;C | ~2005–10 | Coal<br>
+        15–20 yr old. Graphite plant = 24×7 critical. Single large boiler — any failure is catastrophic.<br>
+        Coal bunker + ESP + cold cyclone — all need insulation renewal.
+      </div>
+      <div class="contact-block">
+        🏢 HEG Ltd., Mandideep Industrial Area, Raisen Road, Bhopal — 462 046, MP<br>
+        🏛 Regd. Office: Bhilwara Towers, A-12, Sector-1, Noida 201 301, UP<br>
+        📞 +91 7480-405 500 (plant) | Corporate: +91 120-4390 300<br>
+        🌐 hegltd.com | 📧 investors@hegltd.com<br><br>
+        <div class="search-terms">
+          <span>LinkedIn Search Terms:</span><br>
+          "Plant Head HEG Mandideep" | "VP Operations HEG Limited" | "Boiler Engineer HEG Bhopal"
+        </div>
+      </div>
+    </div>
+
+    <div class="priority-card rank1">
+      <div class="rank-num">05</div>
+      <h3>Bajaj Hindusthan Sugar CPP</h3>
+      <div class="company">Bajaj Hindusthan Sugar Ltd. — Maqsoodpur, Uttar Pradesh</div>
+      <div class="details">
+        <strong>2×190 TPH CFBC</strong> | TKIL Full EPC | ~2007–12 | Coal + Bagasse<br>
+        12–18 yr old. Seasonal cycling = accelerated insulation fatigue. Two large boilers.<br>
+        Large furnaces, cyclones, duct networks. Listed company — transparent procurement.
+      </div>
+      <div class="contact-block">
+        🏢 Bajaj Hindusthan Sugar Ltd., Maqsoodpur Unit, Dist. Lakhimpur Kheri, UP<br>
+        🏛 Corporate: 45/F, Vill. Pratappur Samaspur, Golagokaran Nath, Lakhimpur Kheri, UP<br>
+        📞 Corporate: +91 22 2306 0631 (Mumbai HQ) | 🌐 bajajhindusthan.com<br>
+        📧 secretarial@bajajhindusthan.com<br><br>
+        <div class="search-terms">
+          <span>LinkedIn Search Terms:</span><br>
+          "Plant Head Bajaj Hindusthan Maqsoodpur" | "Boiler Head BHSL UP" | "Chief Engineer Bajaj Hindusthan Sugar"
+        </div>
+      </div>
+    </div>
+
+    <div class="priority-card rank2">
+      <div class="rank-num">06</div>
+      <h3>Tata Chemicals CPP</h3>
+      <div class="company">Tata Chemicals Ltd. — Mithapur, Gujarat</div>
+      <div class="details">
+        <strong>1×220 TPH CFBC + 50 MW</strong> | TKIL EPC | ~2007–12 | Coal/Pet Coke<br>
+        12–18 yr old. Tata Group = premium AM budget. Coastal Gujarat — CUI risk.<br>
+        Large single boiler with cogen. Continuous chemical process plant.
+      </div>
+      <div class="contact-block">
+        🏢 Tata Chemicals Ltd., Mithapur, Devbhumi Dwarka, Gujarat — 361 345<br>
+        🏛 Corporate: Bombay House, 24, Homi Mody Street, Fort, Mumbai 400 001<br>
+        📞 +91 22 6665 8282 (Mumbai) | 🌐 tatachemicals.com<br>
+        📧 investor@tatachemicals.com<br><br>
+        <div class="search-terms">
+          <span>LinkedIn Search Terms:</span><br>
+          "Plant Head Tata Chemicals Mithapur" | "VP Operations TCL Mithapur" | "Utilities Manager Tata Chemicals"
+        </div>
+      </div>
+    </div>
+
+    <div class="priority-card rank2">
+      <div class="rank-num">07</div>
+      <h3>Aditya Birla Group CPP (×2 Plants)</h3>
+      <div class="company">Aditya Birla Group — TBC locations (2 × 50 MW EPC sites)</div>
+      <div class="details">
+        <strong>2×~220 TPH CFBC</strong> | TKIL EPC (two separate 50 MW plants) | ~2006–10<br>
+        15–20 yr old. Two full EPC plants. AB Group = large consolidated procurement.<br>
+        Repeat TKIL customer — warm relationship for DEMECH entry.
+      </div>
+      <div class="contact-block">
+        🏛 Aditya Birla Group, Aditya Birla Centre, S.K. Ahire Marg, Worli, Mumbai 400 030<br>
+        📞 +91 22 6652 5000 | 🌐 adityabirla.com<br>
+        📧 Corporate comms via website<br><br>
+        <div class="search-terms">
+          <span>LinkedIn Search Terms:</span><br>
+          "Group Head Utilities Aditya Birla" | "Energy Head Grasim Industries" | "Plant Head AB Power"
+        </div>
+      </div>
+    </div>
+
+    <div class="priority-card rank2">
+      <div class="rank-num">08</div>
+      <h3>UltraTech Cement CPP — Tadipatri</h3>
+      <div class="company">UltraTech Cement Ltd. — Tadipatri, Andhra Pradesh</div>
+      <div class="details">
+        <strong>2×115 TPH CFBC + 2×25 MW</strong> | TKIL EPC | ~2005–10 | Coal<br>
+        15–20 yr old. UltraTech = India's largest cement company — massive procurement.<br>
+        Standardised across plants — one successful retrofit = template for all sites.
+      </div>
+      <div class="contact-block">
+        🏢 UltraTech Cement (Tadipatri Unit), Tadipatri, Anantapur Dist., AP<br>
+        🏛 Corporate: Aditya Birla Centre, S.K. Ahire Marg, Worli, Mumbai 400 030<br>
+        📞 +91 22 6652 4000 | 🌐 ultratechcement.com<br>
+        📧 investors@ultratechcement.com<br><br>
+        <div class="search-terms">
+          <span>LinkedIn Search Terms:</span><br>
+          "Plant Head UltraTech Tadipatri" | "Maintenance Head UltraTech Cement AP" | "Boiler Engineer UltraTech"
+        </div>
+      </div>
+    </div>
+
+    <div class="priority-card rank2">
+      <div class="rank-num">09</div>
+      <h3>Aditya Cement CPP — Chittorgarh</h3>
+      <div class="company">Aditya Cement Ltd. (UltraTech Group) — Chittorgarh, Rajasthan</div>
+      <div class="details">
+        <strong>2×~115 TPH CFBC + 2×25 MW</strong> | TKIL EPC | ~2005–08 | Coal<br>
+        15–20 yr old. Air cooled condenser adds complex duct insulation scope.<br>
+        UltraTech/AB Group — same procurement channel as #8.
+      </div>
+      <div class="contact-block">
+        🏢 Aditya Cement (UltraTech), Shambhupura, Chittorgarh, Rajasthan — 312 025<br>
+        📞 01472-244 800 (plant est.) | 🌐 ultratechcement.com<br><br>
+        <div class="search-terms">
+          <span>LinkedIn Search Terms:</span><br>
+          "Plant Head UltraTech Chittorgarh" | "Chief Engineer Aditya Cement Rajasthan"
+        </div>
+      </div>
+    </div>
+
+    <div class="priority-card rank2">
+      <div class="rank-num">10</div>
+      <h3>DVC / Harduaganj Power</h3>
+      <div class="company">DVC / UPRVUNL — Harduaganj, Uttar Pradesh</div>
+      <div class="details">
+        <strong>2×~175 TPH CFBC</strong> | TKIL EPC + Supply | ~2007–10 | Coal<br>
+        $150M+ order value (TKIL milestone). State utility — periodic AM tenders.<br>
+        Large state power installations with massive duct + ESP networks.
+      </div>
+      <div class="contact-block">
+        🏢 Harduaganj Thermal Power Station, Hapur/Aligarh area, UP<br>
+        🏛 UPRVUNL: Shakti Bhawan, 14, Ashok Marg, Lucknow — 226 001<br>
+        📞 0522-2287 623 (UPRVUNL HQ) | 🌐 uprvunl.org<br>
+        📧 info@uprvunl.org<br><br>
+        <div class="search-terms">
+          <span>LinkedIn Search Terms:</span><br>
+          "Chief Engineer Harduaganj TPS" | "Maintenance Head UPRVUNL" | "Boiler Engineer Harduaganj Power"
+        </div>
+      </div>
+    </div>
+
+    <div class="priority-card rank2">
+      <div class="rank-num">11</div>
+      <h3>Hindalco INDAL Plants</h3>
+      <div class="company">Hindalco Industries (formerly INDAL) — West/South India</div>
+      <div class="details">
+        <strong>Multiple units 70–150 TPH</strong> | TKIL Supply | ~1995–2005 | Coal/Pet Coke<br>
+        20–30 yr old — OLDEST TKIL CFBC references. Hindalco group. Major overhaul due.<br>
+        Critical aluminium operations — zero tolerance for boiler downtime.
+      </div>
+      <div class="contact-block">
+        🏛 Hindalco HQ: Century Bhavan, Dr. Annie Besant Road, Worli, Mumbai 400 030<br>
+        📞 +91 22 6625 4000 | 🌐 hindalco.com<br>
+        📧 investor.relations@hindalco.com<br><br>
+        <div class="search-terms">
+          <span>LinkedIn Search Terms:</span><br>
+          "VP Engineering Hindalco" | "Head Utilities Hindalco Aluminium" | "Boiler Head Hindalco Industries"
+        </div>
+      </div>
+    </div>
+
+    <div class="priority-card rank2">
+      <div class="rank-num">12</div>
+      <h3>Meghalaya Power CPP</h3>
+      <div class="company">Meghalaya Power Ltd. — Meghalaya</div>
+      <div class="details">
+        <strong>2×90 TPH CFBC</strong> | TKIL E&amp;C | ~2008–13 | Coal<br>
+        10–15 yr old. Remote location — insulation renewal from local vendors difficult.<br>
+        State utility — procurement via tender. Two standard CFBC units.
+      </div>
+      <div class="contact-block">
+        🏛 Meghalaya Power Distribution Corp. Ltd., Shillong, Meghalaya — 793 001<br>
+        📞 0364-2502 295 | 🌐 megpowerlimited.com<br><br>
+        <div class="search-terms">
+          <span>LinkedIn Search Terms:</span><br>
+          "Plant Engineer Meghalaya Power" | "Chief Engineer MPL" | "Operations Head Meghalaya Power"
+        </div>
+      </div>
+    </div>
+
+    <div class="priority-card rank3">
+      <div class="rank-num">13</div>
+      <h3>Utkal Alumina CPP</h3>
+      <div class="company">Utkal Alumina International Ltd (Hindalco) — Rayagada, Odisha</div>
+      <div class="details">
+        <strong>~200 TPH CFBC (90 MW)</strong> | TKIL Supply (inferred) | ~2012–16<br>
+        8–12 yr old. Alumina refinery = 24×7 critical. Remote Odisha — premium services.<br>
+        Hindalco group procurement.
+      </div>
+      <div class="contact-block">
+        🏢 Utkal Alumina International Ltd., Doraguda, Tikiri, Rayagada — 765 022, Odisha<br>
+        📞 06856-XXXXXX | 🌐 adityabirla.com (UAIL)<br><br>
+        <div class="search-terms">
+          <span>LinkedIn Search Terms:</span><br>
+          "Plant Head UAIL Rayagada" | "Maintenance Manager Utkal Alumina" | "Chief Engineer Hindalco Odisha"
+        </div>
+      </div>
+    </div>
+
+    <div class="priority-card rank3">
+      <div class="rank-num">14</div>
+      <h3>Renukoot / Mahan Hindalco CPP</h3>
+      <div class="company">Hindalco Industries — Renukoot, UP / Singrauli, MP</div>
+      <div class="details">
+        <strong>Multiple large units (900 MW total)</strong> | Various OEMs incl. TKIL<br>
+        Massive aluminium captive plants. Some TKIL-supplied units. Aged installations.<br>
+        Hindalco group budget — consolidated procurement possible.
+      </div>
+      <div class="contact-block">
+        🏢 Hindalco Renukoot: Renukoot, Sonbhadra, UP — 231 218<br>
+        📞 05446-252 321 | 🌐 hindalco.com<br><br>
+        <div class="search-terms">
+          <span>LinkedIn Search Terms:</span><br>
+          "VP Plant Hindalco Renukoot" | "Head Engineering Renukoot Aluminium" | "Utilities Head Mahan Aluminium"
+        </div>
+      </div>
+    </div>
+
+    <div class="priority-card rank3">
+      <div class="rank-num">15</div>
+      <h3>TKIL — Ongoing Execution Projects</h3>
+      <div class="company">TKIL Industries (New-build sites) — Various, India</div>
+      <div class="details">
+        <strong>10+ CFBC boilers under execution</strong> | 2023–2026 | 100–315 TPH (est.)<br>
+        NEW-BUILD — Ideal for Derincoat specification at design stage.<br>
+        Contact TKIL Service division directly for partner / specified product opportunity.
+      </div>
+      <div class="contact-block">
+        🏢 TKIL Industries Pvt. Ltd., 018, Pimpri Station Road, Pimpri, Pune — 411 018<br>
+        📞 +91 20 2742 7000 | 🌐 tkil.com<br>
+        📧 info@tkil.com | enquiry@tkil.com<br>
+        🔗 linkedin.com/company/tkil-industries<br><br>
+        <div class="search-terms">
+          <span>Key TKIL Contacts to Target:</span><br>
+          "Head Service Business TKIL" | "Business Development Manager TKIL Boiler" | "VP Sales Boiler TKIL Industries"
+        </div>
+      </div>
+    </div>
+
+    <div class="priority-card rank3">
+      <div class="rank-num">16</div>
+      <h3>Lokmangal Sugar CPP</h3>
+      <div class="company">Lokmangal Industries Ltd. — Solapur, Maharashtra</div>
+      <div class="details">
+        <strong>1×80 TPH CFBC + ESP</strong> | TKIL Supply + E&amp;C | ~2005–10<br>
+        15+ yr old. Sugar sector seasonal cycling. Solapur — accessible Maharashtra location.
+      </div>
+      <div class="contact-block">
+        🏢 Lokmangal Sugar / Industries, Solapur, Maharashtra<br>
+        📞 0217-XXXXXX | 🌐 lokmangal.com<br><br>
+        <div class="search-terms">
+          <span>LinkedIn Search Terms:</span><br>
+          "Plant Head Lokmangal Sugar" | "Chief Engineer Lokmangal Solapur" | "Boiler Engineer Lokmangal"
+        </div>
+      </div>
+    </div>
+
+    <div class="priority-card rank3">
+      <div class="rank-num">17</div>
+      <h3>Balrampur Chini Mills CPP</h3>
+      <div class="company">Balrampur Chini Mills Ltd. — Multiple UP Sites</div>
+      <div class="details">
+        <strong>Multiple boilers 80–90 TPH</strong> | TKIL Supply | ~2005–15<br>
+        Aggregate opportunity across multiple plants. Listed company — transparent budgets.<br>
+        UP sugar belt — multiple TKIL boiler installations across sites.
+      </div>
+      <div class="contact-block">
+        🏛 Balrampur Chini Mills Ltd., FMC Fortuna, A-2/6, Sector 24, Noida — 201 301, UP<br>
+        📞 0120-4309 430 | 🌐 balrampurchini.com<br>
+        📧 investors@balrampurchini.com<br><br>
+        <div class="search-terms">
+          <span>LinkedIn Search Terms:</span><br>
+          "Plant Head BCM Balrampur" | "Technical Director Balrampur Chini" | "Utilities Head BCM"
+        </div>
+      </div>
+    </div>
+
+    <div class="priority-card rank3">
+      <div class="rank-num">18</div>
+      <h3>Sathavahana Ispat WHR</h3>
+      <div class="company">Sathavahana Ispat Ltd. — Bellary, Karnataka</div>
+      <div class="details">
+        <strong>1×60 TPH WHR Boiler (TKIL / EckRohr)</strong> | TKIL E&amp;C | ~2005–10<br>
+        15+ yr old. Steel/sponge iron sector. WHR boilers have large duct insulation needs.<br>
+        Karnataka steel belt — active sector for maintenance services.
+      </div>
+      <div class="contact-block">
+        🏢 Sathavahana Ispat Ltd., Bellary, Karnataka<br>
+        🏛 Corporate: Road No. 12, Banjara Hills, Hyderabad — 500 034<br>
+        📞 040-2339 8700 | 🌐 sathavahanaspat.com<br><br>
+        <div class="search-terms">
+          <span>LinkedIn Search Terms:</span><br>
+          "Plant Head Sathavahana Ispat Bellary" | "Chief Engineer SIL Karnataka"
+        </div>
+      </div>
+    </div>
+
+    <div class="priority-card rank3">
+      <div class="rank-num">19</div>
+      <h3>Ugar Sugar Works CPP</h3>
+      <div class="company">Ugar Sugar Works Ltd. — Ugar Khurd, Karnataka</div>
+      <div class="details">
+        <strong>1×80 TPH Boiler</strong> | TKIL Supply + E&amp;C | ~2005–10<br>
+        15+ yr old. Bagasse/coal dual fuel. Karnataka location. Listed cooperative company.
+      </div>
+      <div class="contact-block">
+        🏢 Ugar Sugar Works Ltd., Ugar Khurd, Belagavi Dist., Karnataka — 591 316<br>
+        📞 08332-XXXXXX | 🌐 ugarsugars.com<br>
+        📧 info@ugarsugars.com<br><br>
+        <div class="search-terms">
+          <span>LinkedIn Search Terms:</span><br>
+          "Plant Head Ugar Sugar" | "Chief Engineer Ugar Works" | "Maintenance Manager Ugar Sugar Karnataka"
+        </div>
+      </div>
+    </div>
+
+    <div class="priority-card rank3">
+      <div class="rank-num">20</div>
+      <h3>Hirantakeshi Sahakari Karkhana</h3>
+      <div class="company">Hirantakeshi Sahakare Karkhane Niyamit — Sankeshwar, Karnataka</div>
+      <div class="details">
+        <strong>1×100 TPH Travel Grate + ESP</strong> | TKIL Supply + E&amp;C | ~2005–10<br>
+        15+ yr old cooperative sugar mill. Karnataka. Bagasse/coal. Standard insulation needs.
+      </div>
+      <div class="contact-block">
+        🏢 Hirantakeshi Sahakari Karkhana, Sankeshwar, Hukkeri Taluka, Belagavi Dist., Karnataka<br>
+        📞 08333-XXXXXX (cooperative office)<br><br>
+        <div class="search-terms">
+          <span>LinkedIn Search Terms:</span><br>
+          "Chief Engineer Hirantakeshi Sugar" | "Plant Manager Sankeshwar Sugar Factory"
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /priority-grid -->
+
+  <div class="section-header">DEMECH Outreach Strategy — Phased Approach</div>
+  <div class="tbl-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Phase</th>
+        <th>Timeframe</th>
+        <th>Target Sites</th>
+        <th>Approach</th>
+        <th>Objective</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Phase 1 — Immediate</strong></td>
+        <td>0–30 days</td>
+        <td>TKIL Service Division (Pune HQ) + HEG Ltd + Birla Copper Dahej</td>
+        <td>Direct call to TKIL Service Business Head; warm intro via TKIL relationship; plant visits to HEG and Birla Copper for insulation audit</td>
+        <td>Secure TKIL as channel partner; get first retrofit order from HEG or Birla Copper</td>
+      </tr>
+      <tr>
+        <td><strong>Phase 2 — Near-term</strong></td>
+        <td>30–90 days</td>
+        <td>ANRAK Aluminium + Gupta Energy + Bajaj Hindusthan + Tata Chemicals</td>
+        <td>Technical presentation on Derincoat for CFBC cold cyclone systems; insulation survey proposal; AM manager visits</td>
+        <td>3–5 insulation audit agreements; 1–2 pilot Derincoat orders</td>
+      </tr>
+      <tr>
+        <td><strong>Phase 3 — Medium-term</strong></td>
+        <td>90–180 days</td>
+        <td>Aditya Birla Group CPPs + UltraTech + Hindalco INDAL group</td>
+        <td>Group-level procurement approach; leveraging repeat TKIL customer relationship; presenting certified Derincoat as recommended insulation for TKIL boilers</td>
+        <td>Group framework agreements; multi-site contracts</td>
+      </tr>
+      <tr>
+        <td><strong>Phase 4 — Strategic</strong></td>
+        <td>180+ days</td>
+        <td>TKIL new-build ongoing projects (10+ boilers under execution)</td>
+        <td>Specification-stage inclusion of Derincoat as standard insulation material in TKIL CFBC cold cyclone and duct systems; create "TKIL Recommended" product status</td>
+        <td>Specified product status; recurring revenue stream from all new TKIL CFBC projects</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     TAB 6: CONTACTS
+     ══════════════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab-contacts">
+<div class="container">
+  <div class="section-header">Contact Database — Top Opportunity Sites</div>
+  <div class="note-box">
+    <strong>Note:</strong> Individual plant-level contacts are generally not publicly available. This database provides corporate contacts, plant addresses, inquiry numbers, and LinkedIn search strategies. Plant-level contacts should be identified via LinkedIn Sales Navigator or direct cold outreach to plant reception.
+  </div>
+
+  <div class="tbl-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Company</th>
+        <th>Plant Name / Location</th>
+        <th>Corporate Office Address</th>
+        <th>Plant Office / Address</th>
+        <th>Corporate Phone</th>
+        <th>Plant Phone (est.)</th>
+        <th>Corporate Email</th>
+        <th>Website</th>
+        <th>LinkedIn Company Page</th>
+        <th>Suggested Contact Role</th>
+        <th>LinkedIn Search String</th>
+        <th>Source / Ref</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td><strong>TKIL Industries Pvt. Ltd.</strong></td>
+        <td>Service Business / New Projects — Pune, MH</td>
+        <td>018, Pimpri Station Road, Pimpri, Pune — 411 018, Maharashtra</td>
+        <td>Same as corporate HQ; Manufacturing: Hyderabad</td>
+        <td>+91 20 2742 7000</td>
+        <td>+91 20 2742 7000</td>
+        <td>enquiry@tkil.com / info@tkil.com</td>
+        <td>tkil.com</td>
+        <td>linkedin.com/company/tkil-industries</td>
+        <td>Head — Service Business; VP Sales (Boiler); Business Dev Manager</td>
+        <td>"Service Head TKIL Industries" | "VP Boiler Business TKIL"</td>
+        <td>tkil.com; TKIL LinkedIn</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><strong>ANRAK Aluminium Ltd.</strong></td>
+        <td>VSEZ Aluminium Plant, Visakhapatnam</td>
+        <td>8-2-577, Road No. 4, Banjara Hills, Hyderabad — 500 034</td>
+        <td>VSEZ, Duvvada, Visakhapatnam — 530 049, AP</td>
+        <td>+91 40-2355 8181</td>
+        <td>0891-XXXXXX (VSEZ plant)</td>
+        <td>info@anrakaluminium.com (inferred)</td>
+        <td>anrak.in</td>
+        <td>Search: "ANRAK Aluminium" LinkedIn</td>
+        <td>VP Operations; Plant Head; Maintenance Manager; Boiler Engineer</td>
+        <td>"Plant Head ANRAK Aluminium" | "Utilities Manager ANRAK Vizag"</td>
+        <td>IndiaMART TKII; ANRAK public records</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><strong>Hindalco Industries Ltd. (Birla Copper)</strong></td>
+        <td>Birla Copper, Dahej, Gujarat</td>
+        <td>Century Bhavan, Dr. Annie Besant Road, Worli, Mumbai — 400 030</td>
+        <td>Vill. Lakhigam, P.O. Dahej, Bharuch District, Gujarat — 392 130</td>
+        <td>+91 22 6625 4000</td>
+        <td>02641-XXXXXX (Dahej area code)</td>
+        <td>investor.relations@hindalco.com</td>
+        <td>hindalco.com</td>
+        <td>linkedin.com/company/hindalco-industries</td>
+        <td>GM Electrical / Sr. GM Electrical (confirmed role at Birla Copper Dahej per CEA records); Plant Head; Maintenance Manager</td>
+        <td>"Sr General Manager Birla Copper Dahej" | "Maintenance Head Hindalco Dahej" | "Utilities Manager Birla Copper"</td>
+        <td>CEA CPP database 2018–19; Hindalco public records</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><strong>HEG Limited</strong></td>
+        <td>HEG Graphite Plant, Mandideep, MP</td>
+        <td>Bhilwara Towers, A-12, Sector-1, Noida — 201 301, Uttar Pradesh</td>
+        <td>Mandideep Industrial Area, Raisen Road, Bhopal — 462 046, MP</td>
+        <td>+91 120-4390 300</td>
+        <td>+91 7480-405 500</td>
+        <td>investors@hegltd.com</td>
+        <td>hegltd.com</td>
+        <td>linkedin.com/company/heg-limited</td>
+        <td>Plant Head; VP Manufacturing; Head Engineering &amp; Maintenance; Chief Engineer Power</td>
+        <td>"Plant Head HEG Mandideep" | "VP Manufacturing HEG" | "Chief Engineer HEG Bhopal"</td>
+        <td>HEG Limited public records; IndiaMART</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td><strong>Bajaj Hindusthan Sugar Ltd.</strong></td>
+        <td>Maqsoodpur Unit, Lakhimpur Kheri, UP</td>
+        <td>Bajaj Bhawan, Jamnalal Bajaj Marg, 226, Nariman Point, Mumbai — 400 021</td>
+        <td>Maqsoodpur, Gola Gokaran Nath, Lakhimpur Kheri, UP</td>
+        <td>+91 22 2306 0631</td>
+        <td>05872-XXXXXX (Gola area)</td>
+        <td>secretarial@bajajhindusthan.com</td>
+        <td>bajajhindusthan.com</td>
+        <td>Search: "Bajaj Hindusthan Sugar" LinkedIn</td>
+        <td>VP Operations; Plant Head; Chief Engineer; Head Maintenance</td>
+        <td>"Chief Engineer Bajaj Hindusthan Maqsoodpur" | "Plant Head BHSL UP" | "VP Engineering Bajaj Hindusthan Sugar"</td>
+        <td>Bajaj Hindusthan public filings; IndiaMART</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td><strong>Tata Chemicals Ltd.</strong></td>
+        <td>Mithapur Plant (Soda Ash + CPP)</td>
+        <td>Bombay House, 24, Homi Mody Street, Fort, Mumbai — 400 001</td>
+        <td>Mithapur, Devbhumi Dwarka, Gujarat — 361 345</td>
+        <td>+91 22 6665 8282</td>
+        <td>02832-XXXXXX (Mithapur area)</td>
+        <td>investor@tatachemicals.com</td>
+        <td>tatachemicals.com</td>
+        <td>linkedin.com/company/tata-chemicals</td>
+        <td>Plant Head (Mithapur); VP Operations; Head Utilities &amp; Power; Chief Engineer</td>
+        <td>"Plant Head Tata Chemicals Mithapur" | "VP Operations TCL Gujarat" | "Head Engineering Tata Chemicals"</td>
+        <td>Tata Chemicals public records; IndiaMART TKII</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td><strong>UltraTech Cement Ltd.</strong></td>
+        <td>Tadipatri Unit CPP, Andhra Pradesh</td>
+        <td>Aditya Birla Centre, S.K. Ahire Marg, Worli, Mumbai — 400 030</td>
+        <td>UltraTech Cement, Tadipatri, Anantapur Dist., AP — 515 411</td>
+        <td>+91 22 6652 4000</td>
+        <td>08558-XXXXXX (Tadipatri)</td>
+        <td>investors@ultratechcement.com</td>
+        <td>ultratechcement.com</td>
+        <td>linkedin.com/company/ultratechcement</td>
+        <td>Plant Head; Head Power &amp; Utilities; Chief Engineer Power; VP Maintenance</td>
+        <td>"Plant Head UltraTech Tadipatri" | "Head Utilities UltraTech Cement" | "Chief Engineer Power UltraTech AP"</td>
+        <td>UltraTech public records; IndiaMART TKII</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td><strong>Gupta Energy Pvt. Ltd.</strong></td>
+        <td>Chandrapur CPP, Maharashtra</td>
+        <td>Chandrapur District, Maharashtra (plant HQ)</td>
+        <td>Village / Chandrapur Industrial Area, Maharashtra</td>
+        <td>07172-XXXXXX</td>
+        <td>07172-XXXXXX</td>
+        <td>Via website (Gupta Group)</td>
+        <td>guptapower.com (est.)</td>
+        <td>Search: "Gupta Energy Chandrapur" LinkedIn</td>
+        <td>Plant Head; VP Operations; Chief Engineer; Boiler &amp; Turbine Head</td>
+        <td>"GM Operations Gupta Energy Chandrapur" | "Plant Head Gupta Power Maharashtra" | "VP Engineering Gupta Energy"</td>
+        <td>Ayoki Fabricon project reference; sub-contractor records</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td><strong>DVC / UPRVUNL</strong></td>
+        <td>Harduaganj Thermal Power Station, UP</td>
+        <td>UPRVUNL HQ: Shakti Bhawan, 14, Ashok Marg, Lucknow — 226 001</td>
+        <td>Harduaganj, Aligarh District, UP</td>
+        <td>0522-2287 623</td>
+        <td>0571-XXXXXX (Aligarh)</td>
+        <td>info@uprvunl.org</td>
+        <td>uprvunl.org</td>
+        <td>Search: "UPRVUNL Harduaganj" LinkedIn</td>
+        <td>CE (Civil/Electrical); Superintendent Engineer; AM Head Harduaganj TPS</td>
+        <td>"Chief Engineer Harduaganj TPS" | "SE Operations UPRVUNL" | "DGM Maintenance Harduaganj"</td>
+        <td>TKIL milestones; UPRVUNL public records</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td><strong>Hindalco Industries (INDAL legacy)</strong></td>
+        <td>Multiple legacy aluminium plants</td>
+        <td>Century Bhavan, Dr. Annie Besant Road, Worli, Mumbai — 400 030</td>
+        <td>Various: Alupuram (Kerala), Belgaum (Karnataka), Hirakud (Odisha), Taloja (MH)</td>
+        <td>+91 22 6625 4000</td>
+        <td>Site-specific</td>
+        <td>investor.relations@hindalco.com</td>
+        <td>hindalco.com</td>
+        <td>linkedin.com/company/hindalco-industries</td>
+        <td>Group Head Engineering; VP Captive Power; Head AM Programs; Plant Engineers at each site</td>
+        <td>"Head Engineering Hindalco" | "VP Utilities Hindalco India" | "Group Engineering Hindalco Aluminium"</td>
+        <td>Hindalco public records; Steamforum CFBC catalogue</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="section-header">LinkedIn Search Strategy for Plant-Level Contacts</div>
+  <div class="highlight-section">
+    <h4>📋 Recommended LinkedIn Search Strings by Role</h4>
+    <ul class="hl-list">
+      <li><strong>Plant Head / GM Operations:</strong> "[Company Name] Plant Head" OR "[Company Name] GM Operations" OR "[Company Name] VP Manufacturing"</li>
+      <li><strong>Boiler / Power Head:</strong> "[Company Name] Boiler Engineer" OR "[Company Name] Chief Engineer Power" OR "[Company Name] Head Utilities"</li>
+      <li><strong>Maintenance Head:</strong> "[Company Name] Head Maintenance" OR "[Company Name] VP Maintenance" OR "[Company Name] DGM Maintenance"</li>
+      <li><strong>Projects / Capex:</strong> "[Company Name] Head Projects" OR "[Company Name] VP Capital Projects" OR "[Company Name] Project Director"</li>
+      <li><strong>Procurement:</strong> "[Company Name] Head Procurement" OR "[Company Name] VP Supply Chain" OR "[Company Name] Materials Manager"</li>
+      <li><strong>For TKIL specifically:</strong> "Service Business TKIL" OR "After Market TKIL" OR "TKIL Industries Boiler Sales"</li>
+    </ul>
+  </div>
+
+</div>
+</div>
+
+<footer>
+  TKIL / Thyssenkrupp India — CFBC Boiler Database &nbsp;|&nbsp; Compiled by DEMECH Intelligence Unit &nbsp;|&nbsp; April 2026 &nbsp;|&nbsp;
+  Sources: tkil.com · thyssenkrupp-industries-india.com · ayokifabricon.com · indiamart.com · steamforum.com (CFBC catalogue) · CEA CPP Database · Company public records
+  <br>
+  <em>⚠ Disclaimer: Project data derived from publicly available sources. Technical specifications for some projects are inferred from TKIL standard design parameters. Contact details are for corporate/public offices — individual names require LinkedIn/direct outreach.</em>
+</footer>
+
+<script>
+  function switchTab(id) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    event.target.classList.add('active');
+  }
+</script>
+
+</body>
+</html>

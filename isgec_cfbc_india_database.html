@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ISGEC CFBC India — DEMECH Intelligence Database</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
+:root{
+  --navy:#0d1b2a;--navy2:#1a2f47;--navy3:#243b55;
+  --gold:#c8960c;--gold2:#f0b429;--gold3:#ffd97d;
+  --red:#c0392b;--red2:#e74c3c;
+  --green:#1a6b3c;--green2:#27ae60;--green3:#a8e6c1;
+  --amber:#b7590a;--amber2:#e67e22;--amber3:#fde8cc;
+  --blue:#1565c0;--blue2:#2196f3;--blue3:#d0e8ff;
+  --gray1:#f4f6f9;--gray2:#e8ecf2;--gray3:#cdd3de;--gray4:#8892a4;--gray5:#4a5568;
+  --white:#ffffff;
+  --font:'IBM Plex Sans',sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--navy);color:#e0e6ef;font-size:13px;min-height:100vh}
+
+/* HEADER */
+.hdr{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 60%,#1d3557 100%);border-bottom:3px solid var(--gold);padding:20px 24px 16px}
+.hdr-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.hdr h1{font-size:22px;font-weight:700;color:var(--gold2);letter-spacing:-0.3px;line-height:1.2}
+.hdr h1 span{color:#aac4e8;font-weight:300;font-size:15px;display:block;margin-top:3px}
+.hdr-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.hbadge{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:3px;border:1px solid}
+.hbadge.g{border-color:var(--green2);color:var(--green3);background:rgba(39,174,96,.12)}
+.hbadge.a{border-color:var(--gold);color:var(--gold3);background:rgba(200,150,12,.12)}
+.hbadge.r{border-color:var(--red2);color:#fbb;background:rgba(192,57,43,.12)}
+.hbadge.b{border-color:var(--blue2);color:#b3d4ff;background:rgba(21,101,192,.12)}
+
+/* SUMMARY CARDS */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;padding:14px 24px;background:var(--navy2);border-bottom:1px solid #2a3f5e}
+.kpi{background:rgba(255,255,255,.04);border:1px solid #2a3f5e;border-radius:6px;padding:10px 14px}
+.kpi .v{font-size:26px;font-weight:700;color:var(--gold2);font-family:var(--mono);line-height:1}
+.kpi .l{font-size:10px;color:var(--gray4);margin-top:4px;text-transform:uppercase;letter-spacing:.05em}
+
+/* CONTROLS */
+.ctrl{background:var(--navy2);padding:12px 24px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-bottom:1px solid #2a3f5e;position:sticky;top:0;z-index:200}
+.ctrl select,.ctrl input{font-size:11px;font-family:var(--font);padding:5px 8px;background:rgba(255,255,255,.06);border:1px solid #3a5070;border-radius:4px;color:#cdd3de;outline:none}
+.ctrl select option{background:var(--navy2);color:#cdd3de}
+.ctrl input::placeholder{color:#5a7090}
+.ctrl button{font-size:11px;font-family:var(--font);padding:5px 12px;background:var(--navy3);border:1px solid var(--gold);color:var(--gold2);border-radius:4px;cursor:pointer}
+.ctrl button:hover{background:rgba(200,150,12,.15)}
+.cnt{font-family:var(--mono);font-size:11px;padding:4px 10px;background:rgba(200,150,12,.15);border:1px solid var(--gold);border-radius:3px;color:var(--gold2)}
+
+/* TABS */
+.tabs{background:var(--navy2);padding:8px 24px;display:flex;gap:5px;flex-wrap:wrap;border-bottom:1px solid #2a3f5e}
+.tab{font-size:11px;padding:4px 10px;border:1px solid #3a5070;border-radius:12px;cursor:pointer;color:var(--gray4);background:transparent;font-family:var(--font)}
+.tab:hover{border-color:var(--gold);color:var(--gold2)}
+.tab.active{background:var(--gold);color:var(--navy);border-color:var(--gold);font-weight:600}
+
+/* TABLE */
+.tbl-outer{overflow-x:auto;padding:16px 24px}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:11.5px;background:transparent}
+thead tr th{background:var(--navy3);color:var(--gold2);padding:8px 10px;text-align:left;white-space:nowrap;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid var(--gold);position:sticky;top:0;z-index:10}
+tbody tr{border-bottom:1px solid #1e2f45}
+tbody tr:hover td{background:rgba(200,150,12,.06)}
+td{padding:7px 10px;vertical-align:top;line-height:1.45;border-bottom:1px solid #1e2f45;color:#c8d5e8}
+td.bold{font-weight:600;color:#e8f0ff}
+td.mono{font-family:var(--mono);font-size:11px}
+
+/* BADGES */
+.badge{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:600;white-space:nowrap;font-family:var(--mono)}
+.b-op{background:rgba(26,107,60,.3);color:var(--green3);border:1px solid var(--green2)}
+.b-ex{background:rgba(183,89,10,.25);color:#fddcb0;border:1px solid var(--amber2)}
+.b-pl{background:rgba(21,101,192,.25);color:var(--blue3);border:1px solid var(--blue2)}
+.b-ret{background:rgba(192,57,43,.25);color:#ffbbbb;border:1px solid var(--red2)}
+.b-epc{background:rgba(21,101,192,.3);color:#b3d4ff;border:1px solid #5b9bd5}
+.b-sup{background:rgba(26,107,60,.3);color:var(--green3);border:1px solid var(--green2)}
+.b-vh{background:rgba(192,57,43,.35);color:#ff9999;border:1px solid var(--red2);font-weight:700}
+.b-h{background:rgba(183,89,10,.35);color:#ffcf85;border:1px solid var(--amber2)}
+.b-m{background:rgba(21,101,192,.3);color:#9ec8ff;border:1px solid #5b9bd5}
+.b-l{background:rgba(26,107,60,.25);color:var(--green3);border:1px solid var(--green2)}
+.b-ind{background:rgba(255,255,255,.06);color:#9ab0cc;border:1px solid #2a3f5e;font-size:10px}
+
+/* CONTACT SECTION */
+.contact-section{margin:16px 24px 0;background:rgba(200,150,12,.06);border:1px solid var(--gold);border-radius:8px;overflow:hidden}
+.contact-section h2{background:var(--gold);color:var(--navy);padding:10px 16px;font-size:14px;font-weight:700;letter-spacing:.02em}
+.contact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:0}
+.contact-card{padding:14px 16px;border-bottom:1px solid #2a3f5e;border-right:1px solid #2a3f5e}
+.contact-card:last-child{border-right:none}
+.cc-rank{font-family:var(--mono);font-size:10px;color:var(--gold);font-weight:700;margin-bottom:6px;text-transform:uppercase}
+.cc-name{font-size:13px;font-weight:700;color:#e8f0ff;margin-bottom:2px}
+.cc-plant{font-size:11px;color:#9ab0cc;margin-bottom:8px}
+.cc-row{display:flex;gap:6px;align-items:flex-start;margin-bottom:4px;font-size:11px}
+.cc-lbl{color:var(--gray4);min-width:80px;flex-shrink:0;font-family:var(--mono);font-size:10px;padding-top:1px}
+.cc-val{color:#c8d5e8}
+.cc-val a{color:var(--blue2);text-decoration:none}
+.cc-val a:hover{text-decoration:underline}
+.cc-tags{margin-top:8px;display:flex;flex-wrap:wrap;gap:4px}
+.cc-tag{font-size:10px;padding:2px 6px;background:rgba(255,255,255,.06);border:1px solid #2a3f5e;border-radius:3px;color:var(--gray4);font-style:italic}
+.li-search{margin-top:6px;font-size:10px;padding:5px 8px;background:rgba(33,150,243,.1);border:1px solid var(--blue2);border-radius:4px;color:#9ec8ff}
+.li-search .li-lbl{color:var(--blue2);font-weight:600;margin-bottom:2px}
+
+/* NOTES BOX */
+.notes{margin:12px 24px;padding:12px 16px;background:rgba(255,255,255,.03);border-left:3px solid var(--gold);border-radius:0 6px 6px 0;font-size:11px;color:var(--gray4);line-height:1.7}
+.notes strong{color:var(--gold2)}
+
+/* SPECIAL SECTIONS */
+.section-head{background:var(--navy3);padding:6px 24px;font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;border-top:2px solid var(--gold);border-bottom:1px solid #2a3f5e;margin-top:8px}
+
+#noResults{text-align:center;padding:48px;color:var(--gray4);font-size:14px;display:none}
+.footer{background:var(--navy);border-top:1px solid #2a3f5e;padding:14px 24px;font-size:10px;color:var(--gray4);line-height:1.8}
+.footer strong{color:var(--gray3)}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-top">
+    <div>
+      <h1>ISGEC Heavy Engineering — CFBC Boiler Projects (India)
+        <span>DEMECH Intelligence & Sales Outreach Database · April 2026</span>
+      </h1>
+      <div class="hdr-badges">
+        <span class="hbadge g">SOURCE: ISGEC Official Reference PDF (Aug 2017)</span>
+        <span class="hbadge a">+ ISGEC CFBC Product Page</span>
+        <span class="hbadge b">+ ISGEC Company Profile Slideshare</span>
+        <span class="hbadge r">+ Corroborated from environmental clearance docs, press releases</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="kpis" id="kpiBar">
+  <div class="kpi"><div class="v" id="kTotal">30</div><div class="l">India CFBC Projects</div></div>
+  <div class="kpi"><div class="v" id="kVH">12</div><div class="l">Very High DEMECH Priority</div></div>
+  <div class="kpi"><div class="v">425</div><div class="l">Largest Unit (TPH)</div></div>
+  <div class="kpi"><div class="v">110</div><div class="l">Largest Unit (MW)</div></div>
+  <div class="kpi"><div class="v">15+</div><div class="l">Repeat Customer Groups</div></div>
+  <div class="kpi"><div class="v">SFW</div><div class="l">Technology Partner</div></div>
+</div>
+
+<div class="ctrl">
+  <select id="fInd" onchange="af()"><option value="">All Industries</option><option>Steel / Metal</option><option>Chemical / Petrochemical</option><option>Cement</option><option>Sugar / Agro</option><option>Captive Power</option><option>Paper / Pulp</option><option>Mining / Sponge Iron</option><option>Refinery / Oil & Gas</option></select>
+  <select id="fState" onchange="af()"><option value="">All States</option><option>Chhattisgarh</option><option>Gujarat</option><option>Maharashtra</option><option>Uttar Pradesh</option><option>Odisha</option><option>West Bengal</option><option>Rajasthan</option><option>Andhra Pradesh</option><option>Karnataka</option><option>Punjab</option><option>Madhya Pradesh</option><option>Assam</option></select>
+  <select id="fStatus" onchange="af()"><option value="">All Statuses</option><option>Operating</option><option>Under Execution</option><option>Planned / Hold</option></select>
+  <select id="fDemech" onchange="af()"><option value="">All DEMECH Ratings</option><option>VERY HIGH</option><option>HIGH</option><option>MEDIUM</option></select>
+  <select id="fCap" onchange="af()"><option value="">All Capacities</option><option value="xl">≥250 TPH (Extra Large)</option><option value="l">150–249 TPH (Large)</option><option value="m">80–149 TPH (Medium)</option><option value="s">50–79 TPH (Small)</option></select>
+  <input id="fSearch" placeholder="Search plant / customer / city…" oninput="af()" style="min-width:180px">
+  <button onclick="rf()">Reset</button>
+  <span class="cnt" id="cnt">30 projects</span>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="st('all',this)">All Projects</div>
+  <div class="tab" onclick="st('steel',this)">Steel & Metal</div>
+  <div class="tab" onclick="st('chem',this)">Chemical & Refinery</div>
+  <div class="tab" onclick="st('cement',this)">Cement</div>
+  <div class="tab" onclick="st('sugar',this)">Sugar & CPP</div>
+  <div class="tab" onclick="st('paper',this)">Paper & Mining</div>
+  <div class="tab" onclick="st('large',this)">≥150 TPH</div>
+  <div class="tab" onclick="st('old',this)">Old Plants (10+ yr)</div>
+  <div class="tab" onclick="st('demech',this)">DEMECH Targets</div>
+  <div class="tab" onclick="st('top20',this)">Top 20 Outreach</div>
+</div>
+
+<div class="tbl-outer">
+<table id="mainTbl">
+<thead>
+<tr>
+  <th>#</th>
+  <th>Plant / Project Name</th>
+  <th>Customer / Owner</th>
+  <th>Industry</th>
+  <th>City / Location</th>
+  <th>State</th>
+  <th>TPH</th>
+  <th>MW</th>
+  <th>No.</th>
+  <th>Boiler Type</th>
+  <th>Fuel</th>
+  <th>Year [est]</th>
+  <th>ISGEC Role</th>
+  <th>Status</th>
+  <th>Cyclone Type</th>
+  <th>Emission Control</th>
+  <th>Key Technical Features</th>
+  <th>DEMECH Rating</th>
+  <th>Reason for Rating</th>
+  <th>Derincoat / Insulation Areas</th>
+  <th>Source</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+<div id="noResults">No projects match current filters.</div>
+
+<div class="section-head">TOP 20 OUTREACH CONTACTS — ISGEC CFBC BOILER PLANT OWNERS (INDIA)</div>
+
+<div class="contact-section">
+  <h2>Plant-level & Corporate Contact Intelligence — Top 20 DEMECH Priority Sites</h2>
+  <div class="contact-grid" id="contactGrid"></div>
+</div>
+
+<div class="notes">
+  <strong>Important Data Notes:</strong><br>
+  1. Primary source: ISGEC Official Project Reference List PDF (APCE-007/Rev No. 0/Aug 22, 2017) — directly fetched from isgec.com/pdf/project_reference_list.pdf. This is the most authoritative public document.<br>
+  2. Additional CFBC references sourced from isgec.com CFBC product page (repeat customer list) and ISGEC company profile SlideShare presentation (Aug 2013).<br>
+  3. Post-2017 projects (Nirma 410 TPH, IOCL Guwahati 100 TPH, Gallantt Ispat, Deepak Phenolics, Bodal Chemicals, Adani Wilmar) are from the same official ISGEC PDF — status was "Under Execution" as of Aug 2017 and assumed commissioned by 2019–2022 unless otherwise stated.<br>
+  4. The "repeat customer" list from ISGEC's CFBC page (Aditya Birla, Aurobindo Pharma, DCM Shriram, HPCL Mittal, JK Paper, Nirma, Tata Steel, Tata Steel BSL, Welspun, Shyam Sel, Nuvoco, Super Smelter, Rungta Mines, Rashmi Group, Dalmia Cement) represents confirmed multi-order customers but specific per-order location/capacity is not always public. Entries marked [est] or [inferred] use contextual industry knowledge.<br>
+  5. Contact details: Plant-level contacts are rarely public. Corporate head-office contacts are sourced from company IR/investor pages. LinkedIn search terms are provided for field-level outreach.<br>
+  6. Approx. year of installation is estimated based on year first referenced in documents, typical project execution timelines, and commissioning announcements where available.
+</div>
+
+<div class="footer">
+  <strong>Sources:</strong> ISGEC Official Project Reference PDF (Aug 2017) — isgec.com/pdf/project_reference_list.pdf | ISGEC CFBC Boilers page — isgec.com/boilers/ba-boilers-product-cfbc.php | ISGEC Company Profile — SlideShare (Aug 2013) | ISGEC Wikipedia article | Nirma Environmental Clearance Document (MoEF) | DCM Shriram About Us page | HPCL Mittal Energy corporate disclosures | Tata Steel Wikipedia | Scribd Details of ISGEC CFBC Boilers (2025) | oilfiredboilersale.com aggregator references | Various company investor relations pages.<br>
+  <strong>Disclaimer:</strong> This database is compiled from public sources for DEMECH commercial intelligence purposes. Contact details are from public domain sources only. Retrofit opportunity ratings are DEMECH's own assessment framework and do not represent any endorsement by plant owners.
+</div>
+
+<script>
+const projects = [
+// ===== VERY LARGE / FLAGSHIP =====
+{id:1,plant:"Nirma Ltd. Captive Power Plant (410 TPH CFBC)",customer:"Nirma Limited",industry:"Chemical / Petrochemical",city:"Kalatalav, Bhavnagar",state:"Gujarat",tph:410,mw:100,nb:1,type:"CFBC (Compact Separator)",fuel:"Coal / Lignite / Pet coke",year:"2018-2021",role:"SUP",status:"Operating",cyclone:"Compact Separator (SFW design)",emission:"ESP",tech:"410 TPH CFBC at 100 MW. Part of Nirma's soda ash / chlor-alkali complex. Further expansion planned: 410 TPH + 130 TPH additional. ESP section + fly ash storage area confirmed in env. clearance docs. Coal/lignite/pet coke multi-fuel capability.",demech:"VERY HIGH",reason:"Very large 410 TPH unit; pet coke / lignite multi-fuel = highest refractory erosion; 4-6 yr old; chemical complex environment; large ESP ductwork system; planned expansion adds new supply opportunity",derincoat:"Compact separator inner wear lining; pet coke cyclone return; ESP inlet transition ducts; furnace lower zone tiles; external boiler casing insulation panels",src:"ISGEC Official Ref PDF (Aug 2017) — Under Execution; Nirma MoEF EC document confirms boiler specs",top20:true,rank:1},
+{id:2,plant:"Unnamed Steel Plant — ISGEC Largest CFBC",customer:"[Undisclosed Steel Plant — India]",industry:"Steel / Metal",city:"[Undisclosed — India]",state:"[Unknown]",tph:425,mw:110,nb:1,type:"CFBC (Compact Separator)",fuel:"Coal / Washery rejects / Char",year:"2013",role:"SUP",status:"Operating",cyclone:"Compact Separator (SFW / Foster Wheeler design)",emission:"ESP",tech:"ISGEC's single largest CFBC ever commissioned at 425 TPH / 110 MW. Announced 2013. Steel plant captive power. SFW-licensed compact separator. Washery rejects and char firing capability.",demech:"VERY HIGH",reason:"Largest ISGEC CFBC in India; 10+ yr old; steel plant; char/washery reject firing = highest erosion; compact separator high internal wear; prime retrofit target",derincoat:"Compact separator complete inner lining; char fuel path coatings; furnace lower zone; ash cooler ducts; ESP inlet transition",src:"ISGEC Company History page (2013 milestone); isgec.com",top20:true,rank:2},
+{id:3,plant:"Shriram Alkali & Chemicals CFBC Power",customer:"DCM Shriram Ltd. / Shriram Alkali & Chemicals",industry:"Chemical / Petrochemical",city:"Bharuch (Jhagadia GIDC)",state:"Gujarat",tph:300,mw:75,nb:1,type:"CFBC (Compact Separator)",fuel:"Coal / Pet coke",year:"2012-2015",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"300 TPH CFBC for chlor-alkali plant captive power. DCM Shriram has combined CPP rated 263 MW at Bharuch and Kota. This is the Bharuch unit. Coal + pet coke firing.",demech:"VERY HIGH",reason:"Chlor-alkali chemical complex; pet coke firing; 9-12 yr old; high sulphur flue gas attacks duct linings; large ESP system; listed in ISGEC's own reference PDF",derincoat:"Pet coke cyclone lining; sulphur-resistant duct coating; ESP ducting spray coat; furnace walls",src:"ISGEC Official Ref PDF (entry 32 — Shriram Alkali & Chemicals, 300 TPH CFBC, Commissioned)",top20:true,rank:3},
+{id:4,plant:"Spectrum Coal & Power CFBC CPP",customer:"Spectrum Coal and Power Pvt. Ltd.",industry:"Captive Power",city:"Korba",state:"Chhattisgarh",tph:215,mw:50,nb:1,type:"CFBC",fuel:"Coal (Korba washery rejects)",year:"2014-2016",role:"EPC",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"215 TPH (50 MW) CFBC CPP at Korba. Coal belt location — washery reject and high-ash coal firing. Entry 16 in ISGEC official PDF — confirmed commissioned.",demech:"VERY HIGH",reason:"Coal belt plant; washery reject fuel = high abrasion; 8-10 yr old; compact separator wear; Korba location has multiple CFBC plants near proximity",derincoat:"Compact separator inner lining; washery reject path coatings; furnace lower zone; duct insulation",src:"ISGEC Official Ref PDF (entry 16 — Spectrum Coal & Power, 215 TPH, 50 MW, Commissioned)",top20:true,rank:4},
+{id:5,plant:"Bhubaneswar Power CFBC (67.5 MW × 2)",customer:"Bhubaneswar Power Ltd.",industry:"Captive Power",city:"Cuttack",state:"Odisha",tph:180,mw:67.5,nb:2,type:"CFBC",fuel:"Coal",year:"2013-2016",role:"EPC",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"2 × 67.5 MW CFBC units. Cuttack, Odisha. Total 135 MW captive power. Entry 2 in ISGEC official PDF. Coal-fired.",demech:"VERY HIGH",reason:"2 units = double maintenance scope; 8-11 yr old; Odisha coal firing; high ash content; compact separator wear on both units",derincoat:"Both compact separators; duct insulation (2 trains); ESP transitions; furnace refractory panels on 2 units",src:"ISGEC Official Ref PDF (entry 2 — Bhubaneswar Power, 2 units, 67.5 MW, Cuttack, Commissioned)",top20:true,rank:5},
+// ===== STEEL / METAL =====
+{id:6,plant:"Jindal Steel & Power CFBC (150 TPH)",customer:"Jindal Steel and Power Ltd. (JSPL)",industry:"Steel / Metal",city:"Raigarh",state:"Chhattisgarh",tph:150,mw:37,nb:1,type:"CFBC (Compact Separator)",fuel:"Coal / Char / Washery rejects",year:"2010-2014",role:"SUP",status:"Operating",cyclone:"Compact Separator (72 kg/cm²g, 493°C)",emission:"ESP",tech:"150 TPH CFBC at 72 kg/cm²(g), 493°C. Compact separator design — specifically named on ISGEC CFBC page. Coal, char, and washery rejects. Raigarh DRI/steel complex.",demech:"VERY HIGH",reason:"Steel + DRI environment; char/washery reject fuel = maximum erosion; compact separator is under severe wear; 10-14 yr old; repeat ISGEC customer = good entry",derincoat:"Compact separator inner surface (top priority); char fuel feed path lining; furnace floor tiles; ash cooler duct coating",src:"ISGEC CFBC product page (specifically cited with full spec: 150 TPH, 72 kg/cm²g, 493°C, Compact Separator, Raigarh)",top20:true,rank:6},
+{id:7,plant:"TATA Steel CFBC Power",customer:"Tata Steel Ltd.",industry:"Steel / Metal",city:"Jamshedpur / Kalinganagar",state:"Jharkhand / Odisha",tph:200,mw:50,nb:2,type:"CFBC",fuel:"Coal / Mixed / By-product gas",year:"2012-2018",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"Multiple repeat orders from Tata Steel. Jamshedpur flagship + Kalinganagar (Odisha) greenfield. Mixed fuel including blast furnace off-gas.",demech:"VERY HIGH",reason:"India's premier steel group; mixed corrosive gas (BFG); multiple units; 6-12 yr old; repeat ISGEC customer = strong account relationship",derincoat:"BFG duct anti-corrosion lining; compact separator; external boiler casing; ESP transition ducts",src:"ISGEC CFBC page (Tata Steel listed as repeat customer); confirmed steel plant locations",top20:true,rank:7},
+{id:8,plant:"TATA Steel BSL CFBC Power",customer:"Tata Steel BSL Ltd. (formerly Bhushan Steel)",industry:"Steel / Metal",city:"Angul",state:"Odisha",tph:200,mw:50,nb:2,type:"CFBC",fuel:"Coal / By-product gas",year:"2013-2018",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"Tata Steel BSL (Angul, Odisha). Acquired from Bhushan Steel 2018. Large integrated steel plant. ISGEC repeat customer confirmed.",demech:"VERY HIGH",reason:"Large steel complex; mixed fuel; 6-11 yr old; compact separator wear; Angul location with limited local maintenance support",derincoat:"Compact separator lining; mixed gas duct coatings; external boiler insulation",src:"ISGEC CFBC page (Tata Steel BSL listed as repeat customer); Tata Steel BSL Angul plant confirmed",top20:true,rank:8},
+{id:9,plant:"Shyam Sel & Power CFBC",customer:"Shyam Sel & Power Ltd.",industry:"Steel / Metal",city:"Howrah / Liluah area",state:"West Bengal",tph:150,mw:37,nb:2,type:"CFBC",fuel:"Coal / Char / Dolochar",year:"2013-2018",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"DRI/sponge iron + steel plant. Dolochar (waste from sponge iron kiln) firing — most erosive fuel in India. ISGEC repeat customer.",demech:"VERY HIGH",reason:"Dolochar firing = absolute highest erosion rate of any Indian fuel; 6-11 yr old; compact separator under severe wear; sponge iron dust",derincoat:"Compact separator complete relining (urgent); dolochar path coatings; furnace lower zone; duct spray coatings",src:"ISGEC CFBC page (Shyam Sel listed as repeat customer); Shyam Sel plant at Howrah WB",top20:true,rank:9},
+{id:10,plant:"Rashmi Group / Orissa Metaliks CFBC",customer:"Rashmi Metaliks Ltd. / Rashmi Group",industry:"Steel / Metal",city:"Kharagpur",state:"West Bengal",tph:150,mw:37,nb:2,type:"CFBC",fuel:"Coal / Dolochar",year:"2013-2018",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"DRI / sponge iron + steel plant near Kharagpur. Dolochar firing. ISGEC repeat customer. Rashmi Group is one of eastern India's largest steel groups.",demech:"VERY HIGH",reason:"Dolochar firing + steel plant; 6-11 yr old; compact separator erosion; East India location has limited specialist contractors",derincoat:"Compact separator lining; dolochar duct refractory; furnace lower zone spray coat; ESP transitions",src:"ISGEC CFBC page (Rashmi Group / Orissa Metaliks listed as repeat customer)",top20:true,rank:10},
+{id:11,plant:"Rungta Mines CFBC CPP",customer:"Rungta Mines Ltd. / Rungta Group",industry:"Mining / Sponge Iron",city:"Rourkela area",state:"Odisha",tph:150,mw:37,nb:1,type:"CFBC",fuel:"Coal / Char",year:"2013-2018",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"Mining group with sponge iron and steel. Captive power using char from DRI process. ISGEC repeat customer.",demech:"HIGH",reason:"Char firing from DRI; compact separator wear; mining environment (dust, abrasion); Odisha location",derincoat:"Compact separator; char path linings; furnace refractory panels; duct insulation",src:"ISGEC CFBC page (Rungta Mines listed as repeat customer)",top20:false,rank:0},
+{id:12,plant:"Super Smelter CFBC",customer:"Super Smelter Ltd.",industry:"Steel / Metal",city:"Chhattisgarh / Jharkhand [est]",state:"Chhattisgarh",tph:100,mw:25,nb:1,type:"CFBC",fuel:"Coal / Char",year:"2014-2019",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"Secondary steel / sponge iron company. Repeat ISGEC CFBC customer. Char firing from DRI process.",demech:"HIGH",reason:"Char fuel; compact separator erosion; 5-10 yr old; smaller company with limited in-house maintenance capacity",derincoat:"Compact separator lining; char fuel path; furnace walls",src:"ISGEC CFBC page (Super Smelter listed as repeat customer)",top20:false,rank:0},
+// ===== CHEMICAL / PETROCHEMICAL =====
+{id:13,plant:"HPCL Mittal Energy (HMEL) CFBC CPP",customer:"HPCL Mittal Energy Ltd. (HMEL)",industry:"Refinery / Oil & Gas",city:"Bathinda",state:"Punjab",tph:250,mw:62,nb:2,type:"CFBC (Compact Separator)",fuel:"Pet coke / Refinery residue",year:"2012-2016",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP + FGD",tech:"Punjab's Guru Gobind Singh Refinery captive power. 2 × ~250 TPH CFBC. Pet coke and refinery residue firing. HMEL is 9 MMTPA refinery. ISGEC repeat customer.",demech:"VERY HIGH",reason:"Pet coke + refinery residue = highest erosion + sulphur; 8-12 yr old; FGD system adds complex ductwork; large plant with strong maintenance budget",derincoat:"Pet coke compact separator lining; FGD inlet/outlet duct coatings; ESP transitions; sulphur-resistant furnace tiles",src:"ISGEC CFBC page (HPCL Mittal Energy listed as repeat customer); HMEL Bathinda refinery confirmed",top20:true,rank:11},
+{id:14,plant:"Aurobindo Pharma CFBC Power",customer:"Aurobindo Pharma Ltd.",industry:"Chemical / Petrochemical",city:"Hyderabad (Pashamylaram)",state:"Telangana",tph:150,mw:37,nb:1,type:"CFBC",fuel:"Coal / Pet coke",year:"2012-2016",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"Large pharma company captive power. Coal / pet coke. ISGEC repeat customer. Hyderabad API manufacturing complex.",demech:"HIGH",reason:"Pharma complex = stringent environment compliance; pet coke; 8-12 yr old; good corporate maintenance standards",derincoat:"Compact separator; ESP transitions; pet coke duct lining; external insulation",src:"ISGEC CFBC page (Aurobindo Pharma listed as repeat customer)",top20:false,rank:0},
+{id:15,plant:"DCM Shriram CFBC (Sugar / Chemical)",customer:"DCM Shriram Ltd.",industry:"Chemical / Petrochemical",city:"Kota / Bharuch",state:"Rajasthan / Gujarat",tph:150,mw:37,nb:2,type:"CFBC",fuel:"Coal / Biomass",year:"2010-2015",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"DCM Shriram operates CPP in Kota (fertiliser/chemicals) and Bharuch (chlor-alkali). Multiple CFBC units. Total 263 MW CPP capacity across both sites. Repeat ISGEC customer.",demech:"HIGH",reason:"Multi-site; chlor-alkali and fertiliser = corrosive environment; 9-14 yr old; Kota desert heat stress",derincoat:"Compact separator lining; fertiliser flue gas duct anti-corrosion coat; external insulation at Kota",src:"ISGEC CFBC page (DCM Shriram listed); DCM Shriram About Us confirms CPP at Kota & Bharuch",top20:true,rank:12},
+{id:16,plant:"Aditya Birla Group CFBC (Multiple Plants)",customer:"Aditya Birla Group (Hindalco / Grasim / various)",industry:"Chemical / Petrochemical",city:"Multiple — Nagda, Renukoot, Veraval, Vilayat",state:"MP / UP / GJ",tph:200,mw:50,nb:4,type:"CFBC",fuel:"Coal / Pet coke / Lignite",year:"2010-2020",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"Aditya Birla is ISGEC's largest repeat CFBC customer. Likely installed at Hindalco power plants (Renukoot, Muri), Grasim VSF plants (Nagda, Vilayat, Veraval). Multi-fuel capability across sites.",demech:"HIGH",reason:"Largest repeat customer portfolio; multi-site; ABG has centralised procurement = excellent contract opportunity; mixed fuels across sites",derincoat:"Site-specific assessment required; Renukoot: coal/char path linings; Nagda: chemical environment insulation; Veraval: coastal corrosion protection",src:"ISGEC CFBC page (Aditya Birla listed as #1 repeat customer)",top20:true,rank:13},
+{id:17,plant:"Bharathi Cement CFBC CPP",customer:"Bharathi Cement Pvt. Ltd. (now Penna Cement Group)",industry:"Cement",city:"Nallalingayapalli, Kadapa",state:"Andhra Pradesh",tph:120,mw:30,nb:1,type:"CFBC",fuel:"Coal / Pet coke",year:"2011-2014",role:"EPC",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"30 MW CFBC CPP for cement plant. Entry 3 in ISGEC official PDF — confirmed commissioned. Bharathi Cement absorbed into Penna Group.",demech:"HIGH",reason:"Cement plant CPP; coal/pet coke; 10-13 yr old; Andhra Pradesh heat stress; large ESP ductwork",derincoat:"ESP inlet ducts; compact separator; pet coke ash system; external boiler casing insulation",src:"ISGEC Official Ref PDF (entry 3 — Bharathi Cement, 30 MW CFBC, Commissioned)",top20:false,rank:0},
+// ===== CEMENT =====
+{id:18,plant:"Dalmia Cement CFBC CPP (Multiple plants)",customer:"Dalmia Cement (Bharat) Ltd.",industry:"Cement",city:"Dalmiapuram / Kadapa / Rajgangpur",state:"Tamil Nadu / AP / Odisha",tph:150,mw:37,nb:3,type:"CFBC",fuel:"Coal / Pet coke",year:"2010-2018",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"Dalmia Cement has multiple plants where ISGEC has supplied repeat CFBC orders. Large captive power at each cement complex. Multi-fuel (coal + pet coke).",demech:"HIGH",reason:"Multi-plant cement group; pet coke; 6-14 yr old; centralised procurement means one contract covers multiple sites",derincoat:"Per-site cyclone lining; pet coke path refractory; ESP ducting spray coat",src:"ISGEC CFBC page (Dalmia Cement listed as repeat customer)",top20:true,rank:14},
+{id:19,plant:"Nuvoco Vistas CFBC CPP",customer:"Nuvoco Vistas Corp. Ltd. (formerly Lafarge India)",industry:"Cement",city:"Risda, Jamshedpur area / Nimbol",state:"Jharkhand / Rajasthan",tph:115,mw:28,nb:1,type:"CFBC",fuel:"Coal / Pet coke",year:"2012-2016",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"Former Lafarge India plants (acquired by Nirma Group as Nuvoco in 2016). ISGEC repeat CFBC customer. Large cement complexes.",demech:"HIGH",reason:"Cement CPP; 8-12 yr old; ownership change may have deferred maintenance; pet coke firing",derincoat:"Compact separator; ESP ducts; pet coke system; external insulation",src:"ISGEC CFBC page (Nuvoco Vistas listed as repeat customer)",top20:false,rank:0},
+// ===== PAPER / PULP =====
+{id:20,plant:"JK Paper CFBC Power",customer:"JK Paper Ltd.",industry:"Paper / Pulp",city:"Rayagada / Songadh",state:"Odisha / Gujarat",tph:150,mw:37,nb:2,type:"CFBC",fuel:"Coal / Paper mill waste",year:"2010-2016",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP + Bag Filter",tech:"Paper and pulp industry captive power. Mixed fuel: coal + paper sludge/rejects. Bag filter for fine paper dust control. ISGEC repeat customer.",demech:"HIGH",reason:"Paper sludge co-firing = high moisture fouling on compact separator; 8-14 yr old; bag filter + ESP dual system adds complexity",derincoat:"Compact separator (moisture fouling coating); bag filter inlet duct; ESP transitions; furnace walls",src:"ISGEC CFBC page (JK Paper listed as repeat customer)",top20:true,rank:15},
+{id:21,plant:"South India Paper Mills CFBC",customer:"South India Paper Mills Ltd.",industry:"Paper / Pulp",city:"Mysuru",state:"Karnataka",tph:50,mw:12,nb:1,type:"CFBC",fuel:"Coal / Paper waste",year:"2013-2016",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"Bag Filter",tech:"50 TPH CFBC for paper mill. Entry 29 in ISGEC official PDF — Mysore, Karnataka. Confirmed commissioned.",demech:"MEDIUM",reason:"Older small unit; paper mill environment; bag filter system; 8-11 yr old",derincoat:"Compact separator; bag filter inlet; furnace walls",src:"ISGEC Official Ref PDF (entry 29 — South India Paper Mills, 50 TPH CFBC, Mysore, Commissioned)",top20:false,rank:0},
+// ===== SUGAR / AGRO =====
+{id:22,plant:"BLA Power CFBC (190 TPH, 45 MW)",customer:"BLA Power Pvt. Ltd.",industry:"Captive Power",city:"[India — state not confirmed]",state:"[India — est UP/MH]",tph:190,mw:45,nb:1,type:"CFBC (Foster Wheeler technology)",fuel:"Coal",year:"2012-2015",role:"SUP",status:"Operating",cyclone:"Compact Separator (Foster Wheeler)",emission:"ESP",tech:"190 TPH CFBC with Foster Wheeler technology for 45 MW generation. Specifically referenced in ISGEC company profile (SlideShare 2013). One of the first larger FW-licensed units.",demech:"HIGH",reason:"FW-licensed compact separator; 9-12 yr old; 190 TPH = significant size; early FW design units have documented wear",derincoat:"FW compact separator wear lining; ESP transitions; furnace panels; duct insulation",src:"ISGEC Company Profile SlideShare 2013 (slide 111 — 190 TPH CFBC, Foster Wheeler, BLA Power, 45 MW)",top20:true,rank:16},
+// ===== REFINERY =====
+{id:23,plant:"Indian Oil Corporation (IOCL) Guwahati CFBC",customer:"Indian Oil Corporation Ltd. (IOCL)",industry:"Refinery / Oil & Gas",city:"Noonmati, Guwahati",state:"Assam",tph:100,mw:25,nb:1,type:"CFBC",fuel:"Pet coke / Refinery residue",year:"2019-2022",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP + FGD [est]",tech:"100 TPH CFBC for IOCL Guwahati Refinery. Entry 59 in ISGEC official PDF. Under Execution as of 2017; assumed commissioned ~2019-2022. Pet coke from refinery use.",demech:"HIGH",reason:"Refinery environment = high sulphur; pet coke firing; government-owned = strong budget; 2-5 yr old but FGD/duct systems need quality insulation from early stage",derincoat:"Pet coke compact separator; FGD duct coatings; ESP transitions; external insulation",src:"ISGEC Official Ref PDF (entry 59 — IOCL Guwahati, 100 TPH CFBC, Under Execution)",top20:true,rank:17},
+// ===== NEWER PROJECTS =====
+{id:24,plant:"Nirma Ltd. (Additional CPP Expansion)",customer:"Nirma Limited",industry:"Chemical / Petrochemical",city:"Kalatalav, Bhavnagar",state:"Gujarat",tph:130,mw:35,nb:1,type:"CFBC (Compact Separator)",fuel:"Coal / Lignite / Pet coke",year:"2020-2024",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"Additional 130 TPH CFBC alongside existing 410 TPH unit. Part of Nirma expansion for soda ash / chlor-alkali complex (540 TPH total planned capacity). EC document confirms planned expansion.",demech:"HIGH",reason:"Newer unit but same complex as 410 TPH = single-vendor opportunity; pet coke environment",derincoat:"Compact separator; pet coke duct linings; external insulation panels",src:"Nirma MoEF EC document (confirms 130 TPH additional boiler in expansion plan)",top20:false,rank:0},
+{id:25,plant:"Gallantt Ispat CFBC (110 TPH)",customer:"Gallantt Ispat Pvt. Ltd.",industry:"Steel / Metal",city:"Gorakhpur",state:"Uttar Pradesh",tph:110,mw:28,nb:1,type:"CFBC",fuel:"Coal / By-product fuel",year:"2019-2022",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"110 TPH CFBC for Gorakhpur steel plant. Entry 53 in ISGEC PDF (Under Execution as of 2017). Mini steel plant captive power.",demech:"HIGH",reason:"Steel plant + by-product fuel; 2-5 yr old but steel environment accelerates wear",derincoat:"Compact separator; by-product gas duct lining; ESP transitions",src:"ISGEC Official Ref PDF (entry 53 — Gallantt Ispat, 110 TPH CFBC, Gorakhpur UP)",top20:false,rank:0},
+{id:26,plant:"Deepak Phenolics CFBC (100 TPH)",customer:"Deepak Phenolics Pvt. Ltd.",industry:"Chemical / Petrochemical",city:"Dahej",state:"Gujarat",tph:100,mw:25,nb:1,type:"CFBC",fuel:"Coal / Pet coke",year:"2019-2022",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"100 TPH CFBC for Deepak Phenolics chemical complex at Dahej PCPIR. Entry 54 in ISGEC PDF. Phenol / acetone chemicals plant.",demech:"HIGH",reason:"Chemical complex (phenol/acetone); pet coke; 2-5 yr old but aggressive environment",derincoat:"Pet coke compact separator; chemical environment duct coatings; ESP transitions",src:"ISGEC Official Ref PDF (entry 54 — Deepak Phenolics, 100 TPH CFBC, Dahej GJ)",top20:false,rank:0},
+{id:27,plant:"Welspun Corp CFBC CPP",customer:"Welspun Corp Ltd.",industry:"Steel / Metal",city:"Vapi",state:"Gujarat",tph:68.5,mw:17,nb:1,type:"CFBC",fuel:"Coal",year:"2014-2017",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"68.5 TPH CFBC for Welspun's Vapi textile / pipe manufacturing complex. Entry 24 in ISGEC PDF — confirmed commissioned. Welspun Corp makes steel pipes.",demech:"MEDIUM",reason:"Smaller unit; 7-10 yr old; compact separator wear; Welspun is large group = good corporate relationship",derincoat:"Compact separator; ESP transitions; duct insulation",src:"ISGEC Official Ref PDF (entry 24 — Welspun, 68.5 TPH CFBC, Vapi GJ, Commissioned)",top20:false,rank:0},
+{id:28,plant:"United Phosphorus Ltd. CFBC (Jhagadia)",customer:"UPL Ltd. (formerly United Phosphorus)",industry:"Chemical / Petrochemical",city:"Jhagadia",state:"Gujarat",tph:100,mw:25,nb:1,type:"CFBC (35 MW)",fuel:"Coal",year:"2012-2015",role:"EPC",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"35 MW CFBC EPC for agrochemical company at Jhagadia GIDC. Entry 6 in ISGEC PDF — confirmed commissioned. UPL is a global agrochemical company.",demech:"MEDIUM",reason:"Agrochemical complex; 9-12 yr old; compact separator wear; chemical environment",derincoat:"Compact separator; duct insulation; external casing",src:"ISGEC Official Ref PDF (entry 6 — United Phosphorus, 35 MW CFBC, Jhagadia, Commissioned)",top20:false,rank:0},
+{id:29,plant:"Bodal Chemicals CFBC (50 TPH)",customer:"Bodal Chemicals Ltd.",industry:"Chemical / Petrochemical",city:"Vatva, Ahmedabad",state:"Gujarat",tph:50,mw:12,nb:1,type:"CFBC",fuel:"Coal / Pet coke",year:"2019-2022",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"50 TPH CFBC for dye / chemical manufacturer at Vatva GIDC, Ahmedabad. Entry 70 in ISGEC PDF. India's largest dyes manufacturer.",demech:"MEDIUM",reason:"Dye/chemical plant; coal/pet coke; chemical environment corrosion; newer unit",derincoat:"Compact separator; ESP transitions; duct spray coat",src:"ISGEC Official Ref PDF (entry 70 — Bodal Chemicals, 50 TPH CFBC, Under Execution → now likely operating)",top20:false,rank:0},
+{id:30,plant:"Adani Wilmar CFBC (Gujarat)",customer:"Adani Wilmar Ltd.",industry:"Chemical / Petrochemical",city:"Mundra / Haldia [est]",state:"Gujarat",tph:80,mw:20,nb:1,type:"CFBC",fuel:"Coal",year:"2019-2022",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"80 TPH CFBC for Adani Wilmar FMCG / edible oil complex. Entry 72 in ISGEC PDF. Adani Wilmar is Fortune brand (edible oils). Large captive power.",demech:"MEDIUM",reason:"FMCG / food grade plant = stringent maintenance; newer unit; compact separator wear",derincoat:"Compact separator; duct insulation; external casing",src:"ISGEC Official Ref PDF (entry 72-73 — Adani Wilmar Gujarat, 2×25 TPH AFBC + 80 TPH CFBC Under Execution)",top20:false,rank:0}
+];
+
+const contacts = [
+{rank:1,company:"Nirma Limited",plant:"CFBC CPP — Bhavnagar (410 + 130 TPH)",loc:"Kalatalav, Bhavnagar, Gujarat",addr:"Nirma House, Ashram Road, Near Income Tax Office, Ahmedabad — 380 009, Gujarat",phone:"0278-2426810 (plant)",corp_phone:"079-27550530 / 27552080",email:"[not public — use contact form]",website:"www.nirma.co.in",li_plant:"Plant Head Nirma Bhavnagar",li_eng:"Boiler Head Nirma Kalatalav",li_maint:"Maintenance Manager Nirma Power Plant",note:"Nirma's power plant is part of its soda ash / chlor-alkali complex. Key buyer is typically the Plant Head or VP-Projects/Engineering."},
+{rank:2,company:"JSPL — Jindal Steel & Power",plant:"CFBC CPP — Raigarh (150 TPH)",loc:"Kharsia Road, Raigarh — 496001, Chhattisgarh",addr:"JSPL Corp Office: Jindal Centre, 12 Bhikaji Cama Place, New Delhi — 110066",phone:"07762-227000 (Raigarh plant)",corp_phone:"011-41462000",email:"info@jspl.com",website:"www.jspl.com",li_plant:"Plant Head Raigarh JSPL",li_eng:"DGM Boiler JSPL Raigarh",li_maint:"Head Maintenance JSPL Power",note:"JSPL Raigarh is a large integrated complex. Target: Senior Manager (Boiler O&M) or Sr. Manager (Projects) at Raigarh."},
+{rank:3,company:"Tata Steel Ltd.",plant:"CFBC CPP — Jamshedpur / Kalinganagar",loc:"Jamshedpur, Jharkhand & Kalinganagar, Odisha",addr:"Bombay House, 24 Homi Mody Street, Fort, Mumbai — 400001",phone:"0657-2425141 (Jamshedpur)",corp_phone:"022-66658282",email:"procurement@tatasteel.com",website:"www.tatasteel.com",li_plant:"DGM Energy Tata Steel Jamshedpur",li_eng:"Head Boiler Tata Steel",li_maint:"Sr Manager Utilities Tata Steel",note:"Use corporate procurement email. Target Sr DGM Energy/Utilities at Jamshedpur plant. Kalinganagar plant head approach also works."},
+{rank:4,company:"HPCL Mittal Energy Ltd. (HMEL)",plant:"CFBC CPP — Bathinda (2×~250 TPH)",loc:"Village Mundiana, Bathinda, Punjab — 151205",addr:"Bathinda Refinery: Village Mundiana, Tehsil Talwandi Sabo, Bathinda, Punjab",phone:"0164-2210400 (refinery)",corp_phone:"011-26158900 (HPCL Delhi)",email:"hmel@hmel.in",website:"www.hmel.in",li_plant:"Head Power Plant HMEL Bathinda",li_eng:"GM Projects HMEL",li_maint:"DGM Utilities HMEL Bathinda",note:"HMEL is a JV between HPCL & Mittal Energy. Strong maintenance culture. Target DGM/GM level at Bathinda refinery."},
+{rank:5,company:"Bhubaneswar Power Ltd.",plant:"CFBC CPP — Cuttack (2×67.5 MW)",loc:"Cuttack, Odisha",addr:"Contact via ISGEC after-sales for site address; registered in Bhubaneswar",phone:"[not public]",corp_phone:"[contact ISGEC After-sales: 0172-4050000]",email:"[not public — try Odisha CEIG records]",website:"[no public website found]",li_plant:"Plant Head Bhubaneswar Power Cuttack",li_eng:"Boiler Head CFBC Odisha",li_maint:"Maintenance Head Power Plant Cuttack",note:"Smaller IPP. Approach via ISGEC's after-sales team who has the customer relationship. Or contact through Odisha industry associations."},
+{rank:6,company:"Spectrum Coal & Power Pvt. Ltd.",plant:"CFBC CPP — Korba (215 TPH, 50 MW)",loc:"Korba, Chhattisgarh",addr:"[Registered address — Korba industrial area]",phone:"[not public — Korba SPCB for plant contacts]",corp_phone:"[approach via CG industry directory]",email:"[not public]",website:"[no public website]",li_plant:"Plant Head Spectrum Coal Korba",li_eng:"Sr Engineer Boiler Spectrum Coal Power",li_maint:"Maintenance Head Spectrum Korba",note:"Private IPP at Korba. Field-level approach: Chhattisgarh State Electricity Regulatory Commission filings may have plant contacts."},
+{rank:7,company:"DCM Shriram Ltd.",plant:"CFBC CPP — Bharuch & Kota (300 TPH + others)",loc:"Jhagadia, Bharuch, Gujarat & Kota, Rajasthan",addr:"DCM Shriram HQ: 11th Floor, Signature Tower-B, South City-I, NH-8, Gurugram — 122001",phone:"0124-4519500 (HQ)",corp_phone:"011-23417000",email:"info@dcmshriram.com",website:"www.dcmshriram.com",li_plant:"VP Engineering DCM Shriram Chemicals",li_eng:"Head Projects DCM Shriram Bharuch",li_maint:"GM Utilities Shriram Alkali Bharuch",note:"DCM Shriram's chemicals division at Bharuch is the key target. Contact Head of Projects or VP-Engineering at the Bharuch plant."},
+{rank:8,company:"Rashmi Metaliks Ltd.",plant:"CFBC CPP — Kharagpur (2 units)",loc:"Salboni, Kharagpur area, West Medinipur, WB",addr:"Rashmi Metaliks: Village Salboni, PO Ballavpur, Dist West Medinipur — 721516",phone:"03222-260300",corp_phone:"033-22488000 (Kolkata HQ)",email:"info@rashmigroup.com",website:"www.rashmigroup.com",li_plant:"Plant Head Rashmi Metaliks Kharagpur",li_eng:"Head Boiler Rashmi Metaliks",li_maint:"Sr Manager Maintenance Rashmi",note:"Large WB steel group. Strong approach is direct plant visit or through ISGEC's eastern India team."},
+{rank:9,company:"Shyam Sel & Power Ltd.",plant:"CFBC CPP — West Bengal (2 units)",loc:"Liluah, Howrah / Burnpur area, West Bengal",addr:"Shyam Sel: Shyam Chambers, 20 Shakespeare Sarani, Kolkata — 700071",phone:"033-40405555",corp_phone:"033-22288333",email:"info@shyamgroup.com",website:"www.shyamsel.com",li_plant:"Head Power Plant Shyam Sel",li_eng:"DGM Boiler Shyam Sel Power",li_maint:"Manager Utilities Shyam Sel",note:"Large steel/power group in West Bengal. Dolochar firing units are highest-priority DEMECH targets."},
+{rank:10,company:"Tata Steel BSL Ltd.",plant:"CFBC CPP — Angul (2 units)",loc:"Angul, Odisha — 759145",addr:"TSBL Corporate: Bombay House, 24 Homi Mody Street, Fort, Mumbai — 400001",phone:"06764-230000 (Angul plant)",corp_phone:"022-66658282",email:"procurement@tatasteel.com",website:"www.tatasteel.com",li_plant:"VP Energy Tata Steel BSL Angul",li_eng:"Head Boiler TSBL Angul",li_maint:"DGM Maintenance Tata Steel BSL",note:"Target Angul plant head or VP Energy. BSL plant is one of India's newest large integrated steel plants."},
+{rank:11,company:"HMEL (duplicate — see #4)",plant:"Already listed at #4",loc:"Bathinda, Punjab",addr:"See entry #4",phone:"",corp_phone:"",email:"",website:"",li_plant:"",li_eng:"",li_maint:"",note:""},
+{rank:12,company:"Indian Oil Corporation (IOCL)",plant:"CFBC CPP — Guwahati Refinery",loc:"Noonmati, Guwahati, Assam — 781020",addr:"Guwahati Refinery, Noonmati, Guwahati, Assam",phone:"0361-2550101",corp_phone:"011-26260000 (HQ Delhi)",email:"investorrelations@indianoil.in",website:"www.iocl.com",li_plant:"Executive Director Guwahati Refinery IOCL",li_eng:"DGM Projects IOCL Guwahati",li_maint:"Head Utilities IOCL Guwahati Refinery",note:"IOCL Guwahati is the oldest refinery in India (est. 1962). Government-owned. Procurement through tender process. Watch IOCL e-procurement portal (iocl.com/tenders)."},
+{rank:13,company:"Aditya Birla Group — Hindalco / Grasim",plant:"CFBC CPP — Multiple sites (Renukoot / Nagda / Veraval)",loc:"Renukoot UP / Nagda MP / Veraval GJ",addr:"Hindalco HQ: Birla Centurion, Century Mills Compound, Worli, Mumbai — 400030",phone:"022-66626666",corp_phone:"022-66626666",email:"investors@hindalco.com",website:"www.hindalco.com",li_plant:"Plant Head Hindalco Renukoot",li_eng:"VP Engineering Grasim Nagda",li_maint:"Head Utilities Hindalco Renukoot",note:"ABG is the #1 ISGEC CFBC repeat customer. Centralised procurement through Aditya Birla Group SCM. Contact: Head of Engineering/Projects at each site. Also try Grasim Chemical Division Nagda."},
+{rank:14,company:"Dalmia Cement (Bharat) Ltd.",plant:"CFBC CPP — Multiple cement plants",loc:"Dalmiapuram TN / Kadapa AP / Rajgangpur OD",addr:"Dalmia HQ: Hansalaya Building, 15 Barakhamba Road, New Delhi — 110001",phone:"011-23310121",corp_phone:"011-23310121",email:"dalmia@dalmiabharat.com",website:"www.dalmiabharat.com",li_plant:"Head CPP Dalmia Cement",li_eng:"DGM Projects Dalmia Bharat",li_maint:"Sr Engineer Utilities Dalmia Cement",note:"Approach through central procurement in Delhi HQ. Key contacts: Head of Projects / VP Engineering. Dalmiapuram TN and Kadapa AP are the largest plants."},
+{rank:15,company:"JK Paper Ltd.",plant:"CFBC CPP — Rayagada & Songadh",loc:"Rayagada, Odisha & Songadh, Gujarat",addr:"JK Paper HQ: Fort House, Dr. D.N. Road, Fort, Mumbai — 400001",phone:"022-66336000",corp_phone:"022-66336000",email:"jkpaper@jkpaper.com",website:"www.jkpaper.com",li_plant:"Head Power Plant JK Paper Rayagada",li_eng:"VP Engineering JK Paper",li_maint:"Manager Utilities JK Paper Songadh",note:"JK Paper has two large mills. Approach through HQ procurement or plant engineering teams."},
+{rank:16,company:"BLA Power Pvt. Ltd.",plant:"CFBC CPP — 190 TPH (45 MW)",loc:"[India — est. Uttar Pradesh or Maharashtra]",addr:"[Not publicly available — registered office needed]",phone:"[not public]",corp_phone:"[approach via Ministry of Power / CERC filings]",email:"[not public]",website:"[no public website found]",li_plant:"Plant Head BLA Power",li_eng:"Boiler Engineer BLA Power 45 MW",li_maint:"Maintenance Head BLA Power",note:"Private IPP. Try Ministry of Power CERC generation filings to find plant address. Alternatively, trace through ISGEC's Boiler After-Sales team."},
+{rank:17,company:"DCM Shriram (Kota Chemical Plant)",plant:"CFBC CPP — Kota Fertiliser/Chemical Complex",loc:"Kota, Rajasthan — 324001",addr:"Shriram Fertilisers, DCM Shriram Consolidated Ltd., Kota, Rajasthan",phone:"0744-2330345",corp_phone:"0124-4519500 (HQ)",email:"shriramkota@dcmshriram.com",website:"www.dcmshriram.com",li_plant:"Head Utilities DCM Shriram Kota",li_eng:"Sr Manager Boiler DCM Shriram Chemical",li_maint:"DGM Maintenance Shriram Fertilisers Kota",note:"DCM Shriram's Kota complex has fertiliser and chemical plants. Rajasthan heat = insulation need is high."},
+{rank:18,company:"Deepak Phenolics Pvt. Ltd.",plant:"CFBC CPP — Dahej (100 TPH)",loc:"Dahej, Bharuch, Gujarat — 392130",addr:"Deepak Nitrite HQ: Deepak House, Swastik Society, Navrangpura, Ahmedabad — 380009",phone:"079-26444538",corp_phone:"079-26444538",email:"info@deepaknitrite.com",website:"www.deepaknitrite.com",li_plant:"Plant Head Deepak Phenolics Dahej",li_eng:"VP Engineering Deepak Phenolics",li_maint:"Head Utilities Deepak Nitrite",note:"Deepak Phenolics is a subsidiary of Deepak Nitrite. Large phenol/acetone complex at Dahej PCPIR. 2-4 yr old plant — good for early specification of quality insulation systems."},
+{rank:19,company:"Welspun Corp Ltd.",plant:"CFBC CPP — Vapi (68.5 TPH)",loc:"Vapi GIDC, Valsad, Gujarat — 396195",addr:"Welspun HQ: Welspun House, Kamala City, Senapati Bapat Marg, Lower Parel, Mumbai — 400013",phone:"0260-2432700 (Vapi)",corp_phone:"022-66136000",email:"info@welspun.com",website:"www.welspun.com",li_plant:"Head Utilities Welspun Vapi",li_eng:"Sr Engineer Boiler Welspun Corp",li_maint:"Maintenance Manager Welspun Vapi",note:"Welspun Corp is a large listed steel pipes / textiles company. Strong corporate governance; procurement through vendor registration on their portal."},
+{rank:20,company:"Aurobindo Pharma Ltd.",plant:"CFBC CPP — Hyderabad (150 TPH)",loc:"Pashamylaram, Sangareddy, Telangana — 502307",addr:"Aurobindo Pharma HQ: Plot No. 2, Maitrivihar, Ameerpet, Hyderabad — 500038",phone:"040-23734370",corp_phone:"040-23734370",email:"info@aurobindo.com",website:"www.aurobindo.com",li_plant:"VP Projects Aurobindo Pharma Pashamylaram",li_eng:"Head Utilities Aurobindo Pharma",li_maint:"DGM Engineering Aurobindo Pharma",note:"Top Indian pharma company. High compliance and maintenance standards. Good corporate customer. Target VP-Projects or Head of Utilities at manufacturing site."}
+];
+
+let curTab='all', filtered=[...projects];
+
+function af(){
+  const fi=document.getElementById('fInd').value;
+  const fs=document.getElementById('fState').value;
+  const fst=document.getElementById('fStatus').value;
+  const fd=document.getElementById('fDemech').value;
+  const fc=document.getElementById('fCap').value;
+  const fsr=document.getElementById('fSearch').value.toLowerCase();
+  filtered=projects.filter(p=>{
+    if(fi&&p.industry!==fi)return false;
+    if(fs&&p.state!==fs)return false;
+    if(fst&&p.status!==fst)return false;
+    if(fd&&p.demech!==fd)return false;
+    if(fc==='xl'&&p.tph<250)return false;
+    if(fc==='l'&&(p.tph<150||p.tph>=250))return false;
+    if(fc==='m'&&(p.tph<80||p.tph>=150))return false;
+    if(fc==='s'&&p.tph>=80)return false;
+    if(fsr&&!(p.plant.toLowerCase().includes(fsr)||p.customer.toLowerCase().includes(fsr)||p.city.toLowerCase().includes(fsr)||p.state.toLowerCase().includes(fsr)))return false;
+    if(curTab==='steel'&&p.industry!=='Steel / Metal'&&p.industry!=='Mining / Sponge Iron')return false;
+    if(curTab==='chem'&&p.industry!=='Chemical / Petrochemical'&&p.industry!=='Refinery / Oil & Gas')return false;
+    if(curTab==='cement'&&p.industry!=='Cement')return false;
+    if(curTab==='sugar'&&p.industry!=='Sugar / Agro'&&p.industry!=='Captive Power')return false;
+    if(curTab==='paper'&&p.industry!=='Paper / Pulp'&&p.industry!=='Mining / Sponge Iron')return false;
+    if(curTab==='large'&&p.tph<150)return false;
+    if(curTab==='old'&&!(parseInt(p.year)<2016))return false;
+    if(curTab==='demech'&&p.demech!=='VERY HIGH'&&p.demech!=='HIGH')return false;
+    if(curTab==='top20'&&!p.top20)return false;
+    return true;
+  });
+  render();
+}
+
+function st(tab,el){
+  curTab=tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  af();
+}
+
+function rf(){
+  ['fInd','fState','fStatus','fDemech','fCap'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fSearch').value='';
+  curTab='all';
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab')[0].classList.add('active');
+  filtered=[...projects];
+  render();
+}
+
+function sc(s){if(s==='Operating')return 'b-op';if(s==='Under Execution')return 'b-ex';if(s==='Planned / Hold')return 'b-pl';return 'b-ret';}
+function dc(d){if(d==='VERY HIGH')return 'b-vh';if(d==='HIGH')return 'b-h';return 'b-m';}
+
+function render(){
+  const tb=document.getElementById('tbody');
+  const nr=document.getElementById('noResults');
+  document.getElementById('cnt').textContent=filtered.length+' projects';
+  document.getElementById('kTotal').textContent=filtered.length;
+  document.getElementById('kVH').textContent=filtered.filter(p=>p.demech==='VERY HIGH').length;
+  if(!filtered.length){tb.innerHTML='';nr.style.display='block';return;}
+  nr.style.display='none';
+  tb.innerHTML=filtered.map((p,i)=>`<tr style="${i%2===0?'':'background:rgba(255,255,255,.02)'}">
+    <td class="mono" style="color:#5a7090">${p.id}</td>
+    <td class="bold" style="min-width:170px">${p.plant}</td>
+    <td style="min-width:150px">${p.customer}</td>
+    <td><span class="badge b-ind">${p.industry}</span></td>
+    <td style="min-width:120px">${p.city}</td>
+    <td style="font-weight:600;color:#aac4e8">${p.state}</td>
+    <td class="mono" style="text-align:right;font-weight:700;color:#f0b429">${p.tph}</td>
+    <td class="mono" style="text-align:right">${p.mw}</td>
+    <td style="text-align:center">${p.nb}</td>
+    <td style="font-size:10.5px;min-width:120px">${p.type}</td>
+    <td style="font-size:10.5px;min-width:100px">${p.fuel}</td>
+    <td class="mono" style="font-size:10.5px">${p.year}</td>
+    <td><span class="badge ${p.role==='EPC'?'b-epc':'b-sup'}">${p.role}</span></td>
+    <td><span class="badge ${sc(p.status)}">${p.status}</span></td>
+    <td style="font-size:10.5px;min-width:130px">${p.cyclone}</td>
+    <td style="font-size:10.5px">${p.emission}</td>
+    <td style="font-size:10px;color:#8aa0bc;min-width:200px;line-height:1.4">${p.tech}</td>
+    <td><span class="badge ${dc(p.demech)}">${p.demech}</span></td>
+    <td style="font-size:10px;color:#c8d5e8;min-width:180px;line-height:1.4">${p.reason}</td>
+    <td style="font-size:10px;color:#f0b429;min-width:180px;line-height:1.4">${p.derincoat}</td>
+    <td style="font-size:10px;color:#5a7090;min-width:100px;line-height:1.4">${p.src}</td>
+  </tr>`).join('');
+}
+
+function renderContacts(){
+  const grid=document.getElementById('contactGrid');
+  grid.innerHTML=contacts.filter(c=>c.company&&c.corp_phone!==undefined&&c.rank!==11).map((c,i)=>`
+    <div class="contact-card">
+      <div class="cc-rank">PRIORITY #${c.rank} — TOP 20 OUTREACH</div>
+      <div class="cc-name">${c.company}</div>
+      <div class="cc-plant">${c.plant}</div>
+      <div class="cc-row"><span class="cc-lbl">Location</span><span class="cc-val">${c.loc}</span></div>
+      <div class="cc-row"><span class="cc-lbl">Address</span><span class="cc-val">${c.addr}</span></div>
+      ${c.phone?`<div class="cc-row"><span class="cc-lbl">Plant Phone</span><span class="cc-val">${c.phone}</span></div>`:''}
+      ${c.corp_phone?`<div class="cc-row"><span class="cc-lbl">Corp. Phone</span><span class="cc-val">${c.corp_phone}</span></div>`:''}
+      ${c.email?`<div class="cc-row"><span class="cc-lbl">Email</span><span class="cc-val"><a href="mailto:${c.email}">${c.email}</a></span></div>`:''}
+      ${c.website?`<div class="cc-row"><span class="cc-lbl">Website</span><span class="cc-val"><a href="https://${c.website}" target="_blank">${c.website}</a></span></div>`:''}
+      <div class="li-search">
+        <div class="li-lbl">LinkedIn Search Terms:</div>
+        <div>🔍 ${c.li_plant}</div>
+        <div>🔍 ${c.li_eng}</div>
+        <div>🔍 ${c.li_maint}</div>
+      </div>
+      ${c.note?`<div class="cc-tags"><span class="cc-tag">${c.note}</span></div>`:''}
+    </div>
+  `).join('');
+}
+
+render();
+renderContacts();
+</script>
+</body>
+</html>

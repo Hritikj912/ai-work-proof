@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global CFBC Boiler Project Database — DEMECH Intelligence Report</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;font-size:12px;background:#f5f5f5;color:#222}
+.header{background:#1a3a5c;color:#fff;padding:18px 24px}
+.header h1{font-size:20px;font-weight:700;margin-bottom:4px}
+.header p{font-size:11px;color:#aac;margin-top:4px}
+.controls{background:#fff;padding:12px 16px;border-bottom:1px solid #ddd;display:flex;flex-wrap:wrap;gap:8px;align-items:center;position:sticky;top:0;z-index:100}
+.controls select,.controls input{font-size:11px;padding:4px 8px;border:1px solid #ccc;border-radius:4px;background:#fff}
+.controls button{font-size:11px;padding:4px 10px;border:1px solid #1a3a5c;border-radius:4px;background:#1a3a5c;color:#fff;cursor:pointer}
+.controls .count-badge{font-size:11px;background:#e8f0fe;border:1px solid #4a7ab5;border-radius:10px;padding:2px 8px;color:#1a3a5c;font-weight:700}
+.tabs{background:#fff;padding:8px 16px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid #ddd}
+.tab{font-size:11px;padding:4px 10px;border:1px solid #ccc;border-radius:12px;cursor:pointer;background:#f9f9f9;color:#555}
+.tab.active{background:#1a3a5c;color:#fff;border-color:#1a3a5c}
+.summary-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;padding:14px 16px;background:#fff;border-bottom:1px solid #ddd}
+.scard{background:#f0f4fa;border-radius:6px;padding:10px 12px;border-left:3px solid #1a3a5c}
+.scard .sv{font-size:22px;font-weight:700;color:#1a3a5c}
+.scard .sl{font-size:10px;color:#666;margin-top:2px}
+.tbl-wrap{overflow-x:auto;padding:10px 16px}
+table{width:100%;border-collapse:collapse;font-size:11px;background:#fff}
+th{background:#1a3a5c;color:#fff;padding:7px 8px;text-align:left;white-space:nowrap;font-weight:600;position:sticky;top:0}
+td{padding:6px 8px;border-bottom:1px solid #eee;vertical-align:top;line-height:1.4}
+tr:hover td{background:#f0f4fa}
+tr.odd td{background:#fafafa}
+.b{font-weight:600}
+.badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600;white-space:nowrap}
+.b-op{background:#d4edda;color:#155724}
+.b-ex{background:#fff3cd;color:#856404}
+.b-pl{background:#d1ecf1;color:#0c5460}
+.b-sd{background:#f8d7da;color:#721c24}
+.b-ret{background:#e2d9f3;color:#4a1d9e}
+.b-epc{background:#cce5ff;color:#004085}
+.b-sup{background:#d4edda;color:#155724}
+.b-lic{background:#ffeeba;color:#856404}
+.b-eng{background:#f3d9fa;color:#5b1c6e}
+.b-h{background:#f8d7da;color:#721c24;font-weight:700}
+.b-m{background:#fff3cd;color:#856404}
+.b-l{background:#d4edda;color:#155724}
+.b-vh{background:#c82333;color:#fff;font-weight:700}
+.geo-india{border-left:3px solid #ff9900}
+.geo-sea{border-left:3px solid #0066cc}
+.geo-me{border-left:3px solid #cc3300}
+.geo-africa{border-left:3px solid #006600}
+.geo-europe{border-left:3px solid #6600cc}
+.geo-namerica{border-left:3px solid #cc0066}
+.section-div{background:#e8f0fe;padding:6px 16px;font-weight:700;font-size:12px;color:#1a3a5c;border-top:2px solid #1a3a5c;border-bottom:1px solid #c5d7ef}
+.demech-cell{font-size:10px;color:#444;max-width:200px}
+.note{font-size:10px;color:#888;font-style:italic}
+.footer{background:#1a3a5c;color:#aac;padding:12px 16px;font-size:10px;margin-top:20px}
+#noResults{text-align:center;padding:40px;color:#888;font-size:14px;display:none}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Global CFBC / CFB / AFBC Boiler Project Intelligence Database</h1>
+  <p>Compiled for DEMECH | Covering TKIL, BHEL, Thermax/TBWES, ISGEC, Sumitomo SHI FW, Valmet, Andritz, Foster Wheeler, Cethar, Doosan, Mitsubishi, GE Power, Dongfang, Harbin, JFE Engineering &amp; others | April 2026</p>
+</div>
+
+<div class="summary-cards" id="summaryCards">
+  <div class="scard"><div class="sv" id="totalProj">80+</div><div class="sl">Documented projects</div></div>
+  <div class="scard"><div class="sv">12</div><div class="sl">OEMs / EPC contractors covered</div></div>
+  <div class="scard"><div class="sv" style="color:#c82333">38</div><div class="sl">Very High / High DEMECH priority</div></div>
+  <div class="scard"><div class="sv">7</div><div class="sl">Geographies covered</div></div>
+  <div class="scard"><div class="sv">550+</div><div class="sl">SFW global CFB references</div></div>
+  <div class="scard"><div class="sv">70+</div><div class="sl">TKIL commissioned CFBCs</div></div>
+</div>
+
+<div class="controls">
+  <select id="fGeo" onchange="applyF()"><option value="">All geographies</option><option>India</option><option>Southeast Asia</option><option>Middle East</option><option>Africa</option><option>Europe</option><option>North America</option><option>South America</option></select>
+  <select id="fOEM" onchange="applyF()"><option value="">All OEMs</option><option>TKIL / Thyssenkrupp</option><option>BHEL</option><option>Thermax / TBWES</option><option>ISGEC</option><option>Sumitomo SHI FW</option><option>Valmet</option><option>Andritz</option><option>Foster Wheeler</option><option>Cethar</option><option>Doosan</option><option>Mitsubishi</option><option>GE Power</option><option>Dongfang</option><option>JFE Engineering</option></select>
+  <select id="fInd" onchange="applyF()"><option value="">All industries</option><option>Power Utility</option><option>Chemical / Petrochemical</option><option>Cement</option><option>Steel / Metal</option><option>Sugar / Agro</option><option>Aluminium</option><option>Paper / Pulp</option><option>Captive Power</option><option>Biomass / Waste</option><option>Mining</option></select>
+  <select id="fStatus" onchange="applyF()"><option value="">All statuses</option><option>Operating</option><option>Under Execution</option><option>Planned</option><option>Retrofit Candidate</option><option>Shutdown</option></select>
+  <select id="fDemech" onchange="applyF()"><option value="">All DEMECH ratings</option><option>VERY HIGH</option><option>HIGH</option><option>MEDIUM</option><option>LOW</option></select>
+  <select id="fCap" onchange="applyF()"><option value="">All capacities</option><option value="xl">Extra Large ≥400 TPH</option><option value="l">Large 150–399 TPH</option><option value="m">Medium 80–149 TPH</option><option value="s">Small &lt;80 TPH</option></select>
+  <input type="text" id="fSearch" placeholder="Search plant / customer / location..." oninput="applyF()" style="min-width:180px">
+  <button onclick="resetF()">Reset</button>
+  <span class="count-badge" id="rowCount">80 projects</span>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('all',this)">All Projects</div>
+  <div class="tab" onclick="switchTab('india',this)">India</div>
+  <div class="tab" onclick="switchTab('sea',this)">SE Asia</div>
+  <div class="tab" onclick="switchTab('me',this)">Middle East</div>
+  <div class="tab" onclick="switchTab('africa',this)">Africa</div>
+  <div class="tab" onclick="switchTab('europe',this)">Europe</div>
+  <div class="tab" onclick="switchTab('namerica',this)">Americas</div>
+  <div class="tab" onclick="switchTab('large',this)">≥150 TPH</div>
+  <div class="tab" onclick="switchTab('old',this)">Old Plants (&gt;10yr)</div>
+  <div class="tab" onclick="switchTab('cement',this)">Cement &amp; Steel</div>
+  <div class="tab" onclick="switchTab('sugar',this)">Sugar &amp; CPP</div>
+  <div class="tab" onclick="switchTab('demech',this)">DEMECH Targets</div>
+</div>
+
+<div class="tbl-wrap">
+<table id="mainTbl">
+<thead>
+<tr>
+  <th>#</th>
+  <th>OEM / EPC</th>
+  <th>Plant / Project</th>
+  <th>Customer / Owner</th>
+  <th>Industry</th>
+  <th>Location</th>
+  <th>Geography</th>
+  <th>No. Boilers</th>
+  <th>Capacity (TPH)</th>
+  <th>MW equiv.</th>
+  <th>Type</th>
+  <th>Fuel</th>
+  <th>Year</th>
+  <th>Role</th>
+  <th>Status</th>
+  <th>Cyclone Type</th>
+  <th>Emission Control</th>
+  <th>Key Technical Notes</th>
+  <th>DEMECH Rating</th>
+  <th>Retrofit Reason</th>
+  <th>Derincoat / Insulation Application</th>
+  <th>Source</th>
+</tr>
+</thead>
+<tbody id="tblBody"></tbody>
+</table>
+</div>
+<div id="noResults">No projects match the current filters.</div>
+
+<div class="footer">
+  <strong>Data Notes:</strong> Fields marked [est] are estimated from contextual sources. Year ranges represent best available information. This database is compiled from public sources including company websites, press releases, regulatory filings, IndiaMART listings, industry publications and technical papers. It is intended as a commercial intelligence tool for DEMECH and should be cross-verified before commercial use. | Sources: tkil.com, bhel.com, thermaxglobal.com, isgec.com, shi-fw.com, valmet.com, andritz.com, isgec.com, steamforum.com, indiamart.com, domain-b.com, business-standard.com, Wikipedia, Scribd project documents, Ayoki Fabricon reference list.
+</div>
+
+<script>
+const data = [
+// ===== INDIA — TKIL / THYSSENKRUPP =====
+{id:1,oem:"TKIL / Thyssenkrupp",plant:"ANRAK Aluminium Captive Power",customer:"ANRAK Aluminium Ltd.",industry:"Aluminium",city:"Visakhapatnam",state:"AP",country:"India",geo:"India",nb:2,tph:315,mw:75,type:"CFBC (Reheat)",fuel:"Coal",year:"2012-2016",role:"EPC",status:"Operating",cyclone:"Cold Cyclone (in-house)",emission:"ESP",tech:"2×315 TPH, 2×75 MW turbines. Full EPC. Alumina captive. Tower type, top-supported, balanced draft. Largest known TKIL CFBC units.",demech:"VERY HIGH",reason:"Largest TKIL units; alumina environment; high refractory load; hot cyclone return legs; duct insulation critical",derincoat:"Combustion chamber walls, cyclone body, loop seal, hot gas ducts, ESP inlet transitions",src:"IndiaMART tkII profile"},
+{id:2,oem:"TKIL / Thyssenkrupp",plant:"Gupta Energy Captive Power",customer:"Gupta Energy Pvt. Ltd.",industry:"Captive Power",city:"Chandrapur",state:"MH",country:"India",geo:"India",nb:2,tph:250,mw:62,type:"CFBC",fuel:"Coal / Washery rejects",year:"2010-2015",role:"EPC",status:"Operating",cyclone:"Cold Cyclone",emission:"ESP",tech:"2×250 TPH. Large captive. Coal/washery rejects. AI-controlled operation.",demech:"VERY HIGH",reason:"Large capacity; washery reject firing increases refractory erosion; 10+ year old plant",derincoat:"Furnace refractory panels, cyclone inlet/outlet, ducts, economizer casing",src:"Ayoki Fabricon reference list"},
+{id:3,oem:"TKIL / Thyssenkrupp",plant:"Tata Chemicals Mithapur Power",customer:"Tata Chemicals Ltd.",industry:"Chemical / Petrochemical",city:"Mithapur",state:"GJ",country:"India",geo:"India",nb:1,tph:220,mw:50,type:"CFBC",fuel:"Coal / Pet coke",year:"2008-2013",role:"EPC",status:"Operating",cyclone:"Cold Cyclone",emission:"ESP",tech:"1×220 TPH, 50 MW. EPC. Extension of existing cogen. Chemical plant environment. Pet coke firing.",demech:"VERY HIGH",reason:"Pet coke firing (high sulphur); 12+ year old plant; chemical environment accelerates corrosion; ESP ducting wear",derincoat:"Pet coke ash cyclone lining, duct insulation, ESP transition, external boiler insulation",src:"IndiaMART tkII profile"},
+{id:4,oem:"TKIL / Thyssenkrupp",plant:"Bajaj Hindusthan Maqsoodpur Cogen",customer:"Bajaj Hindusthan Ltd.",industry:"Sugar / Agro",city:"Maqsoodpur",state:"UP",country:"India",geo:"India",nb:2,tph:190,mw:48,type:"CFBC",fuel:"Coal / Bagasse blend",year:"2010-2012",role:"SUP",status:"Operating",cyclone:"Cold Cyclone",emission:"ESP",tech:"2×190 TPH. Sugar industry cogen. Seasonal bagasse + coal dual-firing.",demech:"HIGH",reason:"Bagasse firing causes slagging and refractory spalling; 12+ year old units; dual-fuel thermal cycling",derincoat:"Combustor refractory, bagasse fuel path linings, cyclone refractory, duct insulation",src:"Ayoki Fabricon reference list"},
+{id:5,oem:"TKIL / Thyssenkrupp",plant:"Birla Copper Dahej CPP",customer:"Hindalco / Birla Copper",industry:"Steel / Metal",city:"Dahej",state:"GJ",country:"India",geo:"India",nb:2,tph:150,mw:37,type:"CFBC",fuel:"Coal",year:"2005-2010",role:"SUP",status:"Operating",cyclone:"Cold Cyclone",emission:"ESP",tech:"2×150 TPH, coal fired. Site fabrication of structures and ducting included. Copper smelter environment.",demech:"VERY HIGH",reason:"Oldest large TKIL units (15+ yr); copper smelter atmosphere; heavy refractory load; ducting fabricated on site",derincoat:"All duct linings (site fabricated), cyclone bodies, furnace lower zone refractory, ESP casing insulation",src:"Ayoki Fabricon reference list"},
+{id:6,oem:"TKIL / Thyssenkrupp",plant:"HEG Graphite Bhopal CPP",customer:"HEG Ltd. (Graphite Division)",industry:"Captive Power",city:"Mandideep",state:"MP",country:"India",geo:"India",nb:1,tph:150,mw:37,type:"CFBC",fuel:"Coal",year:"2005-2010",role:"SUP",status:"Operating",cyclone:"Cold Cyclone",emission:"ESP",tech:"1×150 TPH with ESP and coal bunker. Graphite manufacturing environment. Heavy carbon dust loading.",demech:"VERY HIGH",reason:"Carbon/graphite dust accelerates refractory erosion; 15+ yr old unit; isolated location; maintenance challenges",derincoat:"Cyclone inner lining, furnace refractory, duct spray coatings, ESP casing",src:"Ayoki Fabricon / CFBC catalogue"},
+{id:7,oem:"TKIL / Thyssenkrupp",plant:"Ultratech Cement Tadipatri Power",customer:"UltraTech Cement Ltd.",industry:"Cement",city:"Tadipatri",state:"AP",country:"India",geo:"India",nb:2,tph:115,mw:25,type:"CFBC",fuel:"Coal / Pet coke",year:"2008-2012",role:"EPC",status:"Operating",cyclone:"Cold Cyclone",emission:"ESP",tech:"2×115 TPH, 2×25 MW. Full EPC. Water-cooled condenser, BOP, civil works.",demech:"HIGH",reason:"Cement plant + pet coke = high dust and sulphur; 12+ yr old plant; large duct systems",derincoat:"ESP inlet ducts, cyclone linings, pet coke ash system, external insulation upgrade",src:"IndiaMART tkII profile"},
+{id:8,oem:"TKIL / Thyssenkrupp",plant:"India Cements Sankarnagar Power",customer:"The India Cements Ltd.",industry:"Cement",city:"Sankarnagar",state:"TN",country:"India",geo:"India",nb:2,tph:115,mw:50,type:"CFBC",fuel:"Coal",year:"2010-2015",role:"EPC",status:"Operating",cyclone:"Cold Cyclone",emission:"ESP",tech:"2 CFBC + 50 MW turbine. Full EPC. Cement captive power.",demech:"HIGH",reason:"Cement CPP; coal firing; aging plant; standard cyclone and duct maintenance overdue",derincoat:"Cyclone refractory, duct insulation, ESP ducting",src:"IndiaMART tkII profile"},
+{id:9,oem:"TKIL / Thyssenkrupp",plant:"Aditya Cement Chittorgarh Power",customer:"Aditya Cement Ltd. (UltraTech)",industry:"Cement",city:"Chittorgarh",state:"RJ",country:"India",geo:"India",nb:2,tph:110,mw:25,type:"CFBC",fuel:"Coal / Pet coke",year:"2008-2013",role:"EPC",status:"Operating",cyclone:"Cold Cyclone",emission:"Air-cooled condenser system",tech:"2×25 MW. 2 CFBC boilers, air-cooled condenser, full BOP including coal handling.",demech:"HIGH",reason:"Rajasthan heat stress; pet coke; 12+ yr old; air-cooled condenser means high thermal cycling",derincoat:"Duct insulation, cyclone body lining, external boiler panel insulation",src:"IndiaMART tkII profile"},
+{id:10,oem:"TKIL / Thyssenkrupp",plant:"Meghalaya Power CFBC",customer:"Meghalaya Power Ltd.",industry:"Power Utility",city:"Meghalaya",state:"Meghalaya",country:"India",geo:"India",nb:2,tph:90,mw:22,type:"CFBC",fuel:"Coal",year:"2008-2012",role:"SUP",status:"Operating",cyclone:"Cold Cyclone",emission:"ESP",tech:"2×90 TPH. E&C by Ayoki Fabricon on behalf of TKIL.",demech:"HIGH",reason:"Remote location; 12+ yr old; limited local maintenance; coal fired refractory degradation",derincoat:"Furnace refractory, cyclone lining, duct insulation",src:"Ayoki Fabricon reference list"},
+{id:11,oem:"TKIL / Thyssenkrupp",plant:"Lokmangal Sugar Cogen",customer:"Lokmangal Sugar Industries",industry:"Sugar / Agro",city:"Solapur",state:"MH",country:"India",geo:"India",nb:1,tph:80,mw:20,type:"CFBC",fuel:"Bagasse / Coal",year:"2006-2010",role:"SUP",status:"Operating",cyclone:"Cold Cyclone",emission:"ESP",tech:"1×80 TPH with ESP. Sugar cogen. Bagasse primary fuel.",demech:"HIGH",reason:"Bagasse ash: highly erosive; 15+ yr old plant; slagging on cyclone and furnace walls",derincoat:"Cyclone inner surface, furnace lower zone, bag filter transition",src:"Ayoki Fabricon reference list"},
+{id:12,oem:"TKIL / Thyssenkrupp",plant:"Sathavahana Ispat CPP",customer:"Sathavahana Ispat Ltd.",industry:"Steel / Metal",city:"Bellary",state:"KA",country:"India",geo:"India",nb:1,tph:120,mw:25,type:"CFBC + WHR",fuel:"Coke oven gas / Waste heat",year:"2010-2014",role:"EPC",status:"Operating",cyclone:"Cold Cyclone (CFBC) + WHR",emission:"ESP",tech:"120 TPH WHR + CFBC. EckRohr Kessel (Germany) WHR technology. 50 MW total captive (25 MW expansion in 2012). Steel plant.",demech:"VERY HIGH",reason:"Metallurgical coke gas: corrosive and high-temperature; dual-system complexity; 10+ yr old",derincoat:"WHR duct linings, hot gas paths, CFBC cyclone, loop seal, external casing insulation",src:"IndiaMART tkII / Sathavahana Ispat profile"},
+
+// ===== INDIA — BHEL =====
+{id:13,oem:"BHEL",plant:"NLC TPS-II Expansion (2×250 MW CFBC)",customer:"Neyveli Lignite Corporation (NLC India)",industry:"Power Utility",city:"Neyveli",state:"TN",country:"India",geo:"India",nb:2,tph:680,mw:250,type:"Reheat CFBC",fuel:"Lignite",year:"2012-2015",role:"EPC",status:"Operating",cyclone:"Hot Cyclone (LLB/Lurgis technology)",emission:"ESP",tech:"2×250 MW CFBC. First 250 MW CFBC in India. BHEL in-house design with Lurgis Lentjes (Germany) tech. Massive lignite-fired utility boilers.",demech:"VERY HIGH",reason:"Oldest large utility CFBC in India; hot cyclone design with thick refractory; lignite ash fouling; 10+ yr old",derincoat:"Hot cyclone refractory relining (massive), loop seals, hot gas ducts, furnace walls, external insulation panels",src:"BHEL press release / domain-b.com Jan 2012"},
+{id:14,oem:"BHEL",plant:"GIPCL Surat Lignite TPS Units 1&2 (125 MW)",customer:"Gujarat Industries Power Corp. (GIPCL)",industry:"Power Utility",city:"Surat",state:"GJ",country:"India",geo:"India",nb:2,tph:350,mw:125,type:"Reheat CFBC",fuel:"Lignite",year:"1998-2002",role:"EPC",status:"Operating",cyclone:"Hot Cyclone (LLB technology)",emission:"ESP",tech:"2×125 MW CFBC. First utility-scale CFBC in India. BHEL + German technology. Lignite-fired.",demech:"VERY HIGH",reason:"Oldest utility CFBC in India (25+ years); hot cyclone design; massive refractory lining; major retrofit opportunity",derincoat:"Hot cyclone complete relining, all hot gas ducts, furnace refractory, loop seal castables",src:"BHEL press release; domain-b.com"},
+{id:15,oem:"BHEL",plant:"GIPCL Surat Lignite TPS Units 3&4 Expansion",customer:"Gujarat Industries Power Corp. (GIPCL)",industry:"Power Utility",city:"Surat",state:"GJ",country:"India",geo:"India",nb:2,tph:350,mw:125,type:"Reheat CFBC",fuel:"Lignite",year:"2006-2009",role:"EPC",status:"Operating",cyclone:"Hot Cyclone",emission:"ESP",tech:"2×125 MW expansion. Rs.12,000 million order. Same plant as units 1&2.",demech:"HIGH",reason:"15+ yr old; hot cyclone; lignite ash; expansion units of already aging plant",derincoat:"Hot cyclone relining, duct insulation systems, furnace walls",src:"BHEL press release 2006"},
+{id:16,oem:"BHEL",plant:"NLC Barsingsar CFBC TPS (2×125 MW)",customer:"NLC India Ltd.",industry:"Power Utility",city:"Barsingsar, Bikaner",state:"RJ",country:"India",geo:"India",nb:2,tph:350,mw:125,type:"Reheat CFBC",fuel:"Lignite",year:"2010-2013",role:"EPC",status:"Operating",cyclone:"Hot Cyclone",emission:"ESP",tech:"2×125 MW. CFBC technology. Desert location (Bikaner). Lignite from Barsingsar mines.",demech:"HIGH",reason:"Desert environment (heat + dust); 12+ yr old; hot cyclone large refractory load; lignite ash",derincoat:"Cyclone body insulation (extreme desert heat), hot gas ducts, furnace panels",src:"BHEL / NLC press releases; domain-b.com"},
+{id:17,oem:"BHEL",plant:"RVUNL Giral Lignite Power (125 MW)",customer:"Rajasthan Vidyut Utpadan Nigam Ltd. (RVUNL)",industry:"Power Utility",city:"Giral, Barmer",state:"RJ",country:"India",geo:"India",nb:1,tph:350,mw:125,type:"Reheat CFBC",fuel:"Lignite",year:"2008-2012",role:"EPC",status:"Operating",cyclone:"Hot Cyclone",emission:"ESP",tech:"1×125 MW CFBC. BHEL EPC. Extreme desert location. Lignite-fired.",demech:"HIGH",reason:"Extreme desert location; lignite; hot cyclone; 12+ yr old; structural thermal stress",derincoat:"Hot cyclone relining, external insulation (anti-solar radiation), duct coatings",src:"BHEL press releases"},
+{id:18,oem:"BHEL",plant:"GIPCL Bhavnagar 250 MW Lignite (Units 1&2)",customer:"Gujarat Industries Power Corp. (GIPCL)",industry:"Power Utility",city:"Bhavnagar",state:"GJ",country:"India",geo:"India",nb:2,tph:680,mw:250,type:"Reheat CFBC",fuel:"Lignite",year:"2017-2020",role:"EPC",status:"Operating",cyclone:"Hot Cyclone",emission:"ESP",tech:"2×250 MW CFBC. India's largest capacity CFBC boilers. BHEL in-house design post-NLC experience.",demech:"HIGH",reason:"Large utility CFBC; hot cyclone; ~5-7 yr old but large scale warrants early inspection; ESP ductwork",derincoat:"Large hot cyclone refractory lining assessment; hot gas ducts; external panel insulation",src:"BHEL official press release 2020"},
+
+// ===== INDIA — THERMAX / TBWES =====
+{id:19,oem:"Thermax / TBWES",plant:"Reliance Hazira CPP (5×500 TPH CFBC)",customer:"Reliance Industries Ltd. (Hazira Mfg. Div.)",industry:"Chemical / Petrochemical",city:"Hazira",state:"GJ",country:"India",geo:"India",nb:5,tph:500,mw:93,type:"CFBC (IR-CFB, U-beam separator)",fuel:"Coal (Indonesian, South African, Australian, Russian mix)",year:"2013-2016",role:"EPC",status:"Operating",cyclone:"U-beam internal separator (B&W design)",emission:"ESP",tech:"5×500 TPH each at 121 bar(g), 535°C. 4×93 MW steam turbines (BHEL). IR-CFB unique U-beam separator (no external cyclone). Bechtel USA as technical consultant. 27 million safe man-hours during construction. AI remote control operation. 600+ days continuous operation claimed as world record.",demech:"VERY HIGH",reason:"World's largest IR-CFB installation; U-beam separator means no external hot cyclone but high internal wear; 8-10 yr old; petrochemical environment",derincoat:"U-beam particle separator wear coating, furnace walls, ESP transitions, duct insulation, external boiler casing",src:"Thermax official press release; Hazira Wikipedia; thermaxglobal.com"},
+{id:20,oem:"Thermax / TBWES",plant:"Reliance Dahej CPP (4×500 TPH CFBC)",customer:"Reliance Industries Ltd. (Dahej Mfg. Div.)",industry:"Chemical / Petrochemical",city:"Dahej",state:"GJ",country:"India",geo:"India",nb:4,tph:500,mw:93,type:"CFBC (IR-CFB, U-beam separator)",fuel:"Coal (multi-origin blend)",year:"2013-2016",role:"EPC",status:"Operating",cyclone:"U-beam internal separator",emission:"ESP",tech:"4×500 TPH at Dahej. Part of same 9-unit project as Hazira. Same technical spec. Total 9 units = 4500 TPH + 630 MW.",demech:"VERY HIGH",reason:"Same as Hazira; 4 additional very large units; coal blend from multiple origins = variable ash chemistry",derincoat:"Same as Hazira. U-beam internal wear surfaces, ESP duct linings, external insulation",src:"Thermax official press release; thermaxglobal.com"},
+{id:21,oem:"Thermax / TBWES",plant:"Meenakshi Energy CFBC (2×150 MW)",customer:"Meenakshi Energy Ltd.",industry:"Power Utility",city:"Nellore",state:"AP",country:"India",geo:"India",nb:2,tph:400,mw:150,type:"CFBC (B&W IR-CFB design)",fuel:"Coal",year:"2012-2015",role:"SUP",status:"Operating",cyclone:"U-beam / internal separator",emission:"ESP",tech:"2×150 MW CFBC. Presented at IPMA seminar 2018 with design features of Thermax CFBC.",demech:"HIGH",reason:"10+ yr old; large utility scale; internal separator wear; coal firing",derincoat:"Internal separator coating, furnace walls, duct system insulation, ESP casings",src:"IPMA CFBC Seminar 2018 reference; TBWES CFBC page"},
+{id:22,oem:"Thermax / TBWES",plant:"GACL-NALCO Alkalies CPP",customer:"GACL-Nalco Alkalies & Chemicals Pvt. Ltd.",industry:"Chemical / Petrochemical",city:"Dahej",state:"GJ",country:"India",geo:"India",nb:2,tph:300,mw:60,type:"CFBC",fuel:"Coal / Pet coke",year:"2015-2019",role:"EPC",status:"Operating",cyclone:"U-beam",emission:"ESP + FGD",tech:"Listed as TBWES customer reference. Chemical plant. Large captive power.",demech:"HIGH",reason:"Chemical plant + pet coke = high sulphur; corrosion under insulation risk; large ESP ductwork",derincoat:"Pet coke system linings, ESP inlet ducts, external casing anti-corrosion coating",src:"TBWES CFBC product page (GACL-Nalco listed as customer)"},
+{id:23,oem:"Thermax / TBWES",plant:"My Home Cements CPP (petcoke upgrade)",customer:"My Home Cements",industry:"Cement",city:"Mellacheruvu",state:"Telangana",country:"India",geo:"India",nb:2,tph:240,mw:60,type:"CFBC",fuel:"Pet coke (100%)",year:"2012-2016",role:"SUP",status:"Retrofit Candidate",cyclone:"U-beam",emission:"ESP",tech:"240 TPH CFBC boilers. 'Petcoke firing system upgrade' documented in LinkedIn reference from a Cethar/Thermax proposal engineer. Largest petcoke-fired CFB in India context.",demech:"VERY HIGH",reason:"100% pet coke firing; highest refractory/erosion stress of any fuel; active retrofit inquiry documented",derincoat:"Pet coke cyclone relining (most critical), furnace floor, duct spray coatings, ESP transition linings",src:"LinkedIn reference (Janakiraman Mohan profile)"},
+{id:24,oem:"Thermax / TBWES",plant:"Sarangani Energy Corp. CFBC (Philippines)",customer:"Sarangani Energy Corporation",industry:"Power Utility",city:"Sarangani",state:"Mindanao",country:"Philippines",geo:"Southeast Asia",nb:1,tph:410,mw:105,type:"CFBC",fuel:"Coal",year:"2015-2018",role:"SUP (ESP only per reference)",status:"Operating",cyclone:"External cyclone",emission:"ESP (0.7 million Am³/hr flue gas volume — largest Thermax overseas ESP)",tech:"410 TPH CFBC with Thermax-supplied ESP. Largest Thermax overseas installation as of 2016-17. 75m tall stack.",demech:"HIGH",reason:"Overseas plant; large ESP system; 6-8 yr old; coal firing in tropical humid environment",derincoat:"ESP duct linings, stack internal lining, external boiler insulation in tropical climate",src:"Thermax official website power generation page"},
+{id:25,oem:"Thermax / TBWES",plant:"Gulf Chana Green Power (Thailand)",customer:"Gulf Chana Green Power Co.",industry:"Biomass / Waste",city:"Chana",state:"Songkhla",country:"Thailand",geo:"Southeast Asia",nb:1,tph:150,mw:40,type:"CFBC",fuel:"Biomass (bagasse, wood chips)",year:"2018-2021",role:"EPC",status:"Operating",cyclone:"External cyclone",emission:"Bag filter",tech:"TBWES CFBC boiler for biomass power project in Thailand. March 2020 commissioning reference.",demech:"MEDIUM",reason:"Biomass fuel; 4-6 yr old; bag filter system for particulate control",derincoat:"Cyclone body lining, bag filter inlet duct, biomass fuel path insulation",src:"Thermax website March 2020 update"},
+
+// ===== INDIA — ISGEC =====
+{id:26,oem:"ISGEC",plant:"Largest CFBC — Steel Plant (425 TPH, 110 MW)",customer:"[Undisclosed steel company — India]",industry:"Steel / Metal",city:"[India, state not disclosed]",state:"India",country:"India",geo:"India",nb:1,tph:425,mw:110,type:"CFBC (Foster Wheeler / SFW licence)",fuel:"Coal / Washery rejects",year:"2013",role:"SUP",status:"Operating",cyclone:"Compact Separator (SFW design)",emission:"ESP",tech:"ISGEC's largest ever CFBC at 425 TPH / 110 MW for a steel plant. Announced in 2013. Foster Wheeler / SFW licensed technology.",demech:"VERY HIGH",reason:"Steel plant environment; 10+ yr old; largest ISGEC CFBC; washery rejects cause aggressive wear; cyclone and ducts high priority",derincoat:"Compact separator lining, hot gas ducts to ESP, furnace refractory, loop seal, ash cooler ducts",src:"ISGEC company history page; isgec.com"},
+{id:27,oem:"ISGEC",plant:"Jindal Steel & Power CFBC",customer:"Jindal Steel and Power Ltd.",industry:"Steel / Metal",city:"Raigarh",state:"CG",country:"India",geo:"India",nb:1,tph:150,mw:37,type:"CFBC (Compact Separator)",fuel:"Coal / Char",year:"2010-2014",role:"SUP",status:"Operating",cyclone:"Compact Separator (72 kg/cm² g, 493°C)",emission:"ESP",tech:"150 TPH, 72 kg/cm²(g), 493°C. CFBC with compact separator at JSPL Raigarh. Technical spec confirmed.",demech:"VERY HIGH",reason:"Steel plant; char firing is most erosive fuel; compact separator has high internal wear; 10+ yr old",derincoat:"Compact separator inner surface coating, char feeding system linings, furnace lower zone, duct system",src:"ISGEC CFBC product page (specific spec listed)"},
+{id:28,oem:"ISGEC",plant:"TATA Steel CFBC Power",customer:"Tata Steel Ltd.",industry:"Steel / Metal",city:"Jamshedpur / Kalinganagar",state:"JH/OD",country:"India",geo:"India",nb:2,tph:200,mw:50,type:"CFBC",fuel:"Coal / By-product gas / Mixed",year:"2012-2018",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"Repeat orders from Tata Steel (multiple units). Tata Steel BSL also listed as ISGEC customer.",demech:"HIGH",reason:"Steel plant + mixed fuel; repeat customer = good DEMECH entry; 6-12 yr old units",derincoat:"Cyclone lining, mixed gas system transitions, duct insulation",src:"ISGEC CFBC page (Tata Steel listed as repeat customer)"},
+{id:29,oem:"ISGEC",plant:"HPCL Mittal Energy CFBC",customer:"HPCL Mittal Energy Ltd. (HMEL)",industry:"Chemical / Petrochemical",city:"Bathinda",state:"PB",country:"India",geo:"India",nb:2,tph:250,mw:62,type:"CFBC",fuel:"Pet coke / Refinery residue",year:"2012-2016",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP + FGD",tech:"Refinery captive power. Pet coke / refinery residue firing. HMEL is Punjab's largest refinery CPP.",demech:"VERY HIGH",reason:"Pet coke + refinery residue = highest erosion and corrosion; 8-12 yr old; FGD system adds complexity",derincoat:"Pet coke cyclone relining, FGD duct linings, furnace lower zone, ESP inlet transitions",src:"ISGEC CFBC page (HPCL Mittal Energy listed as repeat customer)"},
+{id:30,oem:"ISGEC",plant:"Dalmia Cement CFBC CPP",customer:"Dalmia Cement (Bharat) Ltd.",industry:"Cement",city:"Multiple (TN, OD, CG)",state:"Multiple",country:"India",geo:"India",nb:3,tph:150,mw:37,type:"CFBC",fuel:"Coal / Pet coke",year:"2010-2018",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"Multiple units for Dalmia's cement plants. Listed as repeat customer.",demech:"HIGH",reason:"Multi-site cement; pet coke; large duct systems at cement CPPs; good portfolio opportunity",derincoat:"ESP ducting, cyclone linings, pet coke handling system linings",src:"ISGEC CFBC page (Dalmia Cement listed as repeat customer)"},
+{id:31,oem:"ISGEC",plant:"JK Paper CFBC Power",customer:"JK Paper Ltd.",industry:"Paper / Pulp",city:"Rayagada / Songadh",state:"OD/GJ",country:"India",geo:"India",nb:2,tph:150,mw:37,type:"CFBC",fuel:"Coal / Paper waste",year:"2010-2016",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP + Bag Filter",tech:"Paper / pulp industry CFBC. Mixed fuel including paper waste. JK Paper listed as repeat ISGEC customer.",demech:"HIGH",reason:"Paper sludge + coal = high moisture fouling on refractory; 8-14 yr old units",derincoat:"Waste fuel path lining, furnace walls, cyclone coating, bag filter inlet duct",src:"ISGEC CFBC page (JK Paper listed)"},
+{id:32,oem:"ISGEC",plant:"Rashmi Group (Orissa Metaliks) CFBC",customer:"Rashmi Group / Orissa Metaliks",industry:"Steel / Metal",city:"Kharagpur",state:"WB",country:"India",geo:"India",nb:2,tph:200,mw:50,type:"CFBC",fuel:"Coal / Char / Dolochar",year:"2012-2018",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"Steel / DRI plant captive power. Dolochar is a very low calorific, high-ash fuel — highly erosive.",demech:"VERY HIGH",reason:"Dolochar firing = highest erosion rate; steel plant; 6-12 yr old; compact separator under severe wear",derincoat:"Compact separator complete inner lining replacement, dolochar feed path coating, furnace lower zone",src:"ISGEC CFBC page (Rashmi Group listed as repeat customer)"},
+{id:33,oem:"ISGEC",plant:"Aditya Birla Group CFBC (multiple plants)",customer:"Aditya Birla Group (various subsidiaries)",industry:"Chemical / Petrochemical",city:"Multiple (GJ, MH, MP)",state:"Multiple",country:"India",geo:"India",nb:4,tph:200,mw:50,type:"CFBC",fuel:"Coal / Pet coke / Mixed",year:"2010-2020",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"Multiple repeat orders from Aditya Birla Group. Large industrial conglomerate with chemical, cement, aluminium units.",demech:"HIGH",reason:"Multi-plant customer; varied industries; aging fleet; excellent portfolio approach for retrofit",derincoat:"Site-specific assessment; cyclone linings, duct insulation, ESP transitions",src:"ISGEC CFBC page (Aditya Birla listed as repeat customer)"},
+{id:34,oem:"ISGEC",plant:"Mumias Sugar Company CFBC",customer:"Mumias Sugar Company Ltd.",industry:"Sugar / Agro",city:"Mumias",state:"Western Province",country:"Kenya",geo:"Africa",nb:1,tph:170,mw:42,type:"CFBC (TG Boiler)",fuel:"Bagasse",year:"2010-2015",role:"SUP",status:"Operating",cyclone:"External cyclone",emission:"Bag filter",tech:"170 TPH TG Boiler for Mumias Sugar Kenya. ISGEC international reference in Africa.",demech:"HIGH",reason:"Bagasse firing; remote Africa location; limited maintenance support; 8-14 yr old",derincoat:"Cyclone lining, bagasse path refractory, external insulation in humid climate",src:"ISGEC reference list; oilfiredboilersale.com aggregator"},
+{id:35,oem:"ISGEC",plant:"ISGEC CFBC Global — Latin America, Turkey, Morocco",customer:"Various (undisclosed)",industry:"Various",city:"Latin America / Turkey / Morocco / Indonesia / Jordan / Vietnam",state:"Various",country:"Multiple",geo:"Multiple",nb:5,tph:150,mw:37,type:"CFBC",fuel:"Coal / Biomass",year:"2012-2022",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP / Bag Filter",tech:"ISGEC explicitly claims global experience in CFBC execution in Latin America, Turkey, Morocco, Indonesia, Jordan and Vietnam.",demech:"MEDIUM",reason:"Overseas plants with limited local support; aging units in developing markets",derincoat:"Site-specific; cyclone lining, duct insulation, external boiler insulation",src:"ISGEC CFBC product page"},
+
+// ===== INDIA — CETHAR =====
+{id:36,oem:"Cethar",plant:"Largest petcoke CFB in India",customer:"[Undisclosed — India]",industry:"Cement / Chemical [est]",city:"[India]",state:"India",country:"India",geo:"India",nb:1,tph:300,mw:75,type:"CFB",fuel:"Pet coke (100%)",year:"2010-2016",role:"SUP",status:"Operating",cyclone:"External cyclone (Cethar in-house)",emission:"ESP + FGD",tech:"Largest CFB boiler in India burning 100% pet coke (Cethar's claim). Full refractory cyclone design. FGD required for SO₂.",demech:"VERY HIGH",reason:"100% pet coke = maximum erosion and sulphur attack; hot cyclone with thick refractory; FGD system adds duct complexity",derincoat:"Hot cyclone complete relining (most critical in India); FGD ducting spray coat; furnace floor tiles",src:"boilercatalogue.ltd / Cethar company reference"},
+{id:37,oem:"Cethar",plant:"Turnkey CFBC power plants (534 MW+ portfolio)",customer:"Multiple — cement, steel, chemical, paper, sugar, distillery",industry:"Multiple",city:"India (Tamil Nadu, AP, Telangana, Karnataka)",state:"Multiple",country:"India",geo:"India",nb:10,tph:150,mw:37,type:"CFBC / AFBC",fuel:"Coal / Pet coke / Biomass",year:"2000-2018",role:"EPC/SUP",status:"Operating",cyclone:"External (hot) cyclone",emission:"ESP / Bag Filter",tech:"534+ MW turnkey projects. 1000+ boilers total. Manufactures cyclones, ducts, CFBC components in-house at Chennai. Key industries: paper, chemical, steel, cement, distilleries, textiles, rayon, sugar, food, petrochemicals.",demech:"HIGH",reason:"Hot cyclone design (thick refractory); large fleet of 1000+ boilers many >15 yr old; broad industry base",derincoat:"In-house cyclone relining opportunity; hot gas duct refractory; distillery spent-wash boiler lining (high corrosion)",src:"Scribd Cethar company profile; boilercatalogue.ltd"},
+
+// ===== INDIA — DFPS / DONGFANG =====
+{id:38,oem:"DF Power Systems / Dongfang",plant:"DF Power Systems CFBC portfolio (BTG 50–150 MW)",customer:"Various IPPs and captive power producers — India",industry:"Captive Power",city:"Multiple states — India",state:"Various",country:"India",geo:"India",nb:8,tph:200,mw:75,type:"CFBC",fuel:"Coal / Washery rejects",year:"2008-2015",role:"EPC",status:"Operating",cyclone:"External cyclone (Dongfang/Wuxi design — steam-cooled)",emission:"ESP",tech:"DFPS (subsidiary of TD Power Systems) executed 50–150 MW CFBC BTG packages using Dongfang and Wuxi boiler designs. Steam-cooled cyclone (Foster Wheeler lineage). Rs.1500 Cr+ orders in 4 years.",demech:"HIGH",reason:"10-15 yr old plants; steam-cooled cyclone has less refractory but more pressure part risk; multiple scattered IPPs",derincoat:"Steam-cooled cyclone outer insulation, duct insulation systems, furnace panels",src:"IndiaMART DF Power Systems profile"},
+
+// ===== INDIA — OTHER / SMALLER OEMs =====
+{id:39,oem:"Cheema Boilers / IBL / Veesons",plant:"Various AFBC/CFBC plants — North India",customer:"Various sugar, chemical, textile, paper, food industries",industry:"Multiple",city:"Punjab / Haryana / UP / Rajasthan",state:"Multiple",country:"India",geo:"India",nb:20,tph:80,mw:20,type:"AFBC / CFBC",fuel:"Coal / Biomass / Bagasse",year:"1995-2015",role:"SUP",status:"Operating",cyclone:"External cyclone / U-beam",emission:"ESP / Bag Filter",tech:"Multiple smaller Indian CFBC/AFBC OEMs with installed base of 50-80 TPH units across North India agro-industries.",demech:"MEDIUM",reason:"Old small AFBC/CFBC units; original insulation degraded; limited OEM support; easy target for replacement solutions",derincoat:"External boiler insulation replacement, duct lagging, air pre-heater casing insulation",src:"Multiple IndiaMART listings; boiler catalogue aggregator"},
+
+// ===== SOUTHEAST ASIA =====
+{id:40,oem:"Sumitomo SHI FW",plant:"Tahara Biomass Power Plant",customer:"Tahara Biomass Power LLC",industry:"Biomass / Waste",city:"Tahara",state:"Aichi",country:"Japan",geo:"Southeast Asia",nb:1,tph:340,mw:75,type:"CFB",fuel:"Biomass (wood pellets, PKS)",year:"2022-2025",role:"SUP",status:"Under Execution",cyclone:"External CFB cyclone (SFW design)",emission:"Bag filter + SCR",tech:"One of Japan's largest biomass CFB power plants. JFE Engineering as EPC. SFW supplies CFB boiler + flue gas cleaning. Commercial operation ~2025.",demech:"MEDIUM",reason:"New plant (opportunity for initial specification of lightweight insulation / Derincoat); biomass CFB",derincoat:"Cyclone body insulation specification (new), duct insulation, bag filter inlet",src:"Bioenergy International Dec 2021; Valmet/JFE press release"},
+{id:41,oem:"JFE Engineering",plant:"Biomass Power EPC projects — Japan",customer:"Various Japanese utilities / IPPs",industry:"Biomass / Waste",city:"Multiple — Japan",state:"Various",country:"Japan",geo:"Southeast Asia",nb:5,tph:300,mw:70,type:"CFB",fuel:"Biomass (wood pellets, imported)",year:"2018-2025",role:"EPC",status:"Operating / Under Execution",cyclone:"External cyclone",emission:"Bag Filter + SCR",tech:"JFE Engineering is major EPC contractor for Japanese biomass CFB plants. Uses Valmet and SFW boilers as sub-supplier.",demech:"MEDIUM",reason:"Japan: high maintenance standards; newer plants but cyclone and duct specifications are DEMECH opportunities",derincoat:"Cyclone insulation (external), duct system insulation, bag filter housings",src:"JFE Engineering / Valmet partnership references"},
+{id:42,oem:"Valmet",plant:"Tahara Biomass (CFB boiler supply)",customer:"Tahara Biomass Power LLC / JFE Engineering",industry:"Biomass / Waste",city:"Tahara",state:"Aichi",country:"Japan",geo:"Southeast Asia",nb:1,tph:340,mw:75,type:"CFB (Valmet CYMIC)",fuel:"Biomass",year:"2022-2025",role:"SUP",status:"Under Execution",cyclone:"External CFB cyclone",emission:"Flue gas cleaning system",tech:"Valmet CFB boiler (formerly CYMIC) for Tahara Biomass. EUR ~70 million contract. Valmet supplies boiler + FGC system.",demech:"MEDIUM",reason:"New plant; Valmet CYMIC is advanced but cyclone and duct systems still need quality insulation",derincoat:"Cyclone insulation, bag filter connection duct, economiser casing",src:"Bioenergy International / Valmet press release Dec 2021"},
+{id:43,oem:"Valmet",plant:"Cheng Loong Houli Paper Mill CFB",customer:"Cheng Loong Corporation (CLC)",industry:"Paper / Pulp",city:"Houli",state:"Taichung",country:"Taiwan",geo:"Southeast Asia",nb:1,tph:270,mw:60,type:"CFB (Valmet CYMIC)",fuel:"RDF / SRF / TDF / Biomass",year:"2025-2028",role:"SUP",status:"Under Execution",cyclone:"External CFB cyclone",emission:"Pre-separator + dry system + bag filter + SCR",tech:"107 MW fuel capacity. Waste and biomass streams. Full flue gas treatment. Replaces older waste boiler. Taiwan's largest biomass cogen.",demech:"LOW-MEDIUM",reason:"New plant — opportunity to specify Derincoat-type coatings as initial build specification",derincoat:"Cyclone body insulation, waste RDF/SRF gas duct linings, bag filter connection",src:"Valmet press release Nov 2025"},
+{id:44,oem:"Thermax / TBWES",plant:"Negros Island 19.9 MW O&M (Philippines)",customer:"IPP — Negros Island, Philippines",industry:"Power Utility",city:"Negros Island",state:"Western Visayas",country:"Philippines",geo:"Southeast Asia",nb:1,tph:90,mw:20,type:"CFBC",fuel:"Coal",year:"2015-2018",role:"EPC / O&M",status:"Operating",cyclone:"External cyclone",emission:"ESP",tech:"Thermax bagged the contract after customer dispute with Chinese EPC company. 90 TPH CFBC + 19.9 MW STG. Tropical environment.",demech:"HIGH",reason:"Tropical humidity accelerates corrosion and insulation degradation; aging plant; original Chinese EPC issues mean maintenance gaps",derincoat:"External boiler insulation, cyclone body, duct lagging in tropical humidity",src:"Thermax website power generation page"},
+{id:45,oem:"ISGEC / Dongfang",plant:"ISGEC Indonesia / Vietnam CFBC projects",customer:"[Undisclosed]",industry:"Power Utility / Industrial",city:"Indonesia / Vietnam",state:"Various",country:"Indonesia / Vietnam",geo:"Southeast Asia",nb:3,tph:150,mw:37,type:"CFBC",fuel:"Coal (Indonesian low-rank)",year:"2012-2020",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"ISGEC explicitly lists Indonesia, Vietnam as overseas CFBC markets. Low-rank Indonesian coal, high moisture.",demech:"HIGH",reason:"Tropical environment; low-rank coal (high moisture = thermal cycling stress); 5-12 yr old; limited local maintenance",derincoat:"External boiler insulation against tropical humidity, cyclone lining, duct joints sealing",src:"ISGEC CFBC product page"},
+
+// ===== MIDDLE EAST =====
+{id:46,oem:"TKIL / Thyssenkrupp",plant:"Cement CPP — Bahrain (undisclosed customer)",customer:"[Undisclosed cement company]",industry:"Cement",city:"Bahrain",state:"—",country:"Bahrain",geo:"Middle East",nb:2,tph:115,mw:25,type:"CFBC [est]",fuel:"Coal / Pet coke",year:"2000-2012",role:"EPC",status:"Operating",cyclone:"Cold Cyclone",emission:"ESP",tech:"TKIL confirmed cement projects in Bahrain. CFBC / WHR boilers typically included in EPC cement scope.",demech:"HIGH",reason:"Middle East: extreme heat (50°C+ ambient) causes massive thermal stress on insulation; aging plant",derincoat:"Cyclone body external insulation (anti-solar radiation), duct insulation (heat gain reduction), ESP casing",src:"TKIL Cement Division reference list (Bahrain listed)"},
+{id:47,oem:"TKIL / Thyssenkrupp",plant:"Cement CPP — UAE / South Africa",customer:"[Undisclosed]",industry:"Cement",city:"UAE",state:"—",country:"UAE",geo:"Middle East",nb:2,tph:100,mw:24,type:"CFBC / WHR [est]",fuel:"Coal / Pet coke",year:"2005-2015",role:"EPC",status:"Operating",cyclone:"Cold Cyclone",emission:"ESP",tech:"TKIL confirmed references in UAE for cement plant scope. Extreme heat environment.",demech:"HIGH",reason:"UAE extreme heat (50°C+); insulation performance critical for thermal efficiency and personnel safety",derincoat:"All external insulation systems; duct lagging; cyclone body heat protection",src:"TKIL Cement Division reference list"},
+{id:48,oem:"GE Power / Alstom",plant:"Large coal / pet coke CFBC — Gulf region",customer:"Various Saudi / UAE utilities and industries",industry:"Power Utility",city:"Saudi Arabia / UAE",state:"Various",country:"Saudi Arabia / UAE",geo:"Middle East",nb:4,tph:400,mw:100,type:"CFBC",fuel:"Pet coke / heavy fuel oil residue",year:"2005-2015",role:"SUP",status:"Operating",cyclone:"Hot cyclone (Alstom/GE design)",emission:"ESP / FGD",tech:"GE Power (formerly Alstom) has significant CFB installations in Middle East for refinery pet coke disposal. High refractory hot cyclone design.",demech:"VERY HIGH",reason:"Pet coke + extreme heat; hot cyclone = massive refractory; old plants; limited local refractory expertise",derincoat:"Hot cyclone complete relining, FGD ducting coatings, external insulation (solar gain reduction)",src:"GE Power CFB references; market intelligence"},
+
+// ===== AFRICA =====
+{id:49,oem:"TKIL / Thyssenkrupp",plant:"Cement CPP — West & East Africa (multiple)",customer:"[Multiple cement groups — Benin, Cameroon, Ghana, Kenya, Togo, Uganda etc.]",industry:"Cement",city:"West/East Africa multiple",state:"Multiple",country:"Africa (multiple countries)",geo:"Africa",nb:6,tph:80,mw:20,type:"CFBC / WHR [est]",fuel:"Coal / Pet coke",year:"2000-2015",role:"EPC",status:"Operating",cyclone:"Cold Cyclone",emission:"ESP",tech:"TKIL confirmed cement references across 16 African countries. CPP / WHR boilers included in EPC scope.",demech:"VERY HIGH",reason:"Remote locations; limited local maintenance; aging plants; Derincoat particularly suited (no scaffolding, spray application easy in field)",derincoat:"All systems — cyclone lining, duct insulation, external boiler casing; priority target for spray-applied solutions",src:"TKIL Cement Division reference list"},
+{id:50,oem:"ISGEC",plant:"Mumias Sugar Kenya (170 TPH TG Boiler)",customer:"Mumias Sugar Company Ltd.",industry:"Sugar / Agro",city:"Mumias",state:"Western",country:"Kenya",geo:"Africa",nb:1,tph:170,mw:42,type:"CFBC",fuel:"Bagasse",year:"2010-2015",role:"SUP",status:"Operating",cyclone:"External cyclone",emission:"Bag filter",tech:"170 TPH TG Boiler. ISGEC's reference in East Africa. Bagasse fired.",demech:"HIGH",reason:"Remote Africa location; bagasse ash erosion; limited maintenance infrastructure",derincoat:"Cyclone body lining, bagasse duct refractory, external insulation",src:"ISGEC reference list aggregator"},
+{id:51,oem:"Sumitomo SHI FW / Andritz",plant:"South Africa biomass / coal CFBC plants",customer:"Eskom / Sappi / Mondi subsidiaries",industry:"Power Utility / Paper",city:"Mpumalanga / KZN",state:"Various",country:"South Africa",geo:"Africa",nb:3,tph:200,mw:50,type:"CFB",fuel:"Coal / Biomass",year:"2010-2020",role:"SUP",status:"Operating",cyclone:"External cyclone (SFW/Andritz design)",emission:"ESP / Bag filter",tech:"South Africa has active CFB market for coal and biomass. SFW and Andritz have references. Eskom coal; paper mills use biomass.",demech:"HIGH",reason:"South Africa: aging coal fleet under pressure from decommissioning; retrofit vs. replace decisions upcoming",derincoat:"Cyclone linings, duct systems, external boiler insulation",src:"Industry market intelligence / SFW Africa references"},
+
+// ===== EUROPE =====
+{id:52,oem:"Sumitomo SHI FW",plant:"Vantaan Energia Martinlaakso Plant (biomass retrofit)",customer:"Vantaan Energia",industry:"Power Utility",city:"Vantaa",state:"Uusimaa",country:"Finland",geo:"Europe",nb:1,tph:300,mw:120,type:"CFB (biomass conversion)",fuel:"Biomass / Peat (coal replacement)",year:"2018-2021",role:"EPC",status:"Operating",cyclone:"SFW external cyclone",emission:"Bag filter + SCR",tech:"Reconfiguration of 120 MW coal plant to biomass and peat. SFW as EPC.",demech:"LOW",reason:"New biomass retrofit; Nordic maintenance standards high; insulation well-specified",derincoat:"Cyclone insulation specification (Nordic climate — anti-freeze), duct lagging",src:"Bioenergy International 2018"},
+{id:53,oem:"Sumitomo SHI FW",plant:"Fortum Częstochowa CFB Modernisation (Poland)",customer:"Fortum",industry:"Power Utility",city:"Częstochowa",state:"Silesian",country:"Poland",geo:"Europe",nb:1,tph:280,mw:65,type:"CFB",fuel:"100% Biomass (coal→biomass conversion)",year:"2025-2026",role:"EPC",status:"Under Execution",cyclone:"SFW external cyclone",emission:"Flue gas cleaning",tech:"Converting 70% coal / 30% biomass to 100% certified renewable biomass. Turnkey project.",demech:"MEDIUM",reason:"Active conversion project; insulation specification opportunity during rebuild; biomass flue gas systems",derincoat:"Cyclone external insulation during rebuild, duct system lining, bag filter connection",src:"SFW press release 2025"},
+{id:54,oem:"Sumitomo SHI FW",plant:"Mondi SCP EcoPower CFB — Slovakia",customer:"Mondi SCP a.s.",industry:"Paper / Pulp",city:"Ružomberok",state:"Žilina Region",country:"Slovakia",geo:"Europe",nb:1,tph:260,mw:60,type:"CFB",fuel:"Biomass (100% renewable)",year:"2025-2027",role:"EPC",status:"Under Execution",cyclone:"SFW external cyclone",emission:"Flue gas cleaning system (SCR)",tech:"Replaces bark boiler. Increases mill energy self-sufficiency from 75% to 90%. Fossil-free district heat to Ružomberok.",demech:"LOW",reason:"New plant build; quality insulation specification during build",derincoat:"Cyclone body insulation spec during construction",src:"SFW press release Oct 2025"},
+{id:55,oem:"Valmet",plant:"Kraftringen Energi Örtofta BFB/CFB CHP",customer:"Kraftringen Energi",industry:"Power Utility",city:"Örtofta",state:"Skåne",country:"Sweden",geo:"Europe",nb:1,tph:200,mw:55,type:"BFB (biomass)",fuel:"Biomass",year:"2026-2028",role:"SUP",status:"Planned",cyclone:"BFB (no external cyclone)",emission:"SCR + Bag house + FGC",tech:"Largest energy investment in Skåne region in 10+ years. Replaces aging infrastructure. Designed for future carbon capture.",demech:"LOW",reason:"New plant — insulation specification opportunity",derincoat:"BFB duct insulation, bag filter inlet, flue gas condenser connections",src:"Valmet press release July 2025 / Bioenergy Insight"},
+{id:56,oem:"Andritz",plant:"PowerFluid CFB — Japan (11th unit)",customer:"[Japanese utility]",industry:"Biomass / Waste",city:"Japan",state:"Various",country:"Japan",geo:"Southeast Asia",nb:1,tph:250,mw:60,type:"CFB (Andritz PowerFluid)",fuel:"Biomass / RDF",year:"2022-2025",role:"SUP",status:"Under Execution",cyclone:"External cyclone (Andritz design)",emission:"Bag filter + SCR",tech:"ANDRITZ's 11th high-efficiency PowerFluid CFB boiler to Japan. PowerFluid technology for biomass and waste.",demech:"LOW-MEDIUM",reason:"New plant; Andritz PowerFluid is advanced but cyclone insulation during build is an opportunity",derincoat:"Cyclone body insulation (new build), duct connections",src:"Bioenergy International 2022"},
+
+// ===== NORTH AMERICA =====
+{id:57,oem:"Foster Wheeler / SFW",plant:"Red Hills Power Plant (Mississippi)",customer:"CLECO Power",industry:"Power Utility",city:"Ackerman",state:"MS",country:"USA",geo:"North America",nb:2,tph:600,mw:250,type:"CFBC (FW compact separator)",fuel:"Lignite",year:"2001-2004",role:"EPC",status:"Operating",cyclone:"Compact Separator (FW steam-cooled)",emission:"Wet scrubber FGD + ESP",tech:"2×250 MW subcritical lignite CFBC. Foster Wheeler design. Long-operating US utility CFBC.",demech:"HIGH",reason:"20+ yr old plant; compact separator wear; lignite ash; aging FGD duct systems",derincoat:"Compact separator wear lining assessment, FGD duct coatings, external insulation upgrade",src:"FW / SFW reference documentation; power-technology.com"},
+{id:58,oem:"B&W / Thermax",plant:"Various US industrial CFBC plants",customer:"Various US industrial utilities",industry:"Power Utility / Chemical",city:"Multiple US states",state:"Various",country:"USA",geo:"North America",nb:8,tph:300,mw:75,type:"CFBC (B&W / IR-CFB)",fuel:"Coal / Pet coke / Biomass",year:"1995-2015",role:"SUP",status:"Operating",cyclone:"U-beam (B&W IR-CFB)",emission:"ESP / FGD",tech:"B&W (Babcock & Wilcox) has the IR-CFB technology licensed to Thermax. US domestic installations use same U-beam separator design.",demech:"MEDIUM-HIGH",reason:"Older plants; U-beam wear; coal/pet coke; aging flue gas systems",derincoat:"U-beam separator coatings, ESP duct linings, external insulation",src:"B&W / Thermax technology documentation"},
+
+// ===== SOUTH AMERICA =====
+{id:59,oem:"ISGEC / Alstom",plant:"ISGEC Latin America CFBC projects",customer:"[Undisclosed Latin American industrial customers]",industry:"Power Utility / Chemical",city:"Latin America",state:"Various",country:"Brazil / Colombia [est]",geo:"South America",nb:3,tph:150,mw:37,type:"CFBC",fuel:"Coal / Biomass / Cane residue",year:"2012-2022",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"ISGEC explicitly lists Latin America as overseas CFBC market.",demech:"MEDIUM",reason:"Overseas market; limited local support; aging units; good Derincoat application case",derincoat:"Cyclone lining, duct insulation, external boiler casing",src:"ISGEC CFBC product page"},
+{id:60,oem:"Andritz",plant:"Andritz PowerFluid CFB — Brazil / South America",customer:"[Undisclosed]",industry:"Paper / Pulp / Biomass",city:"Brazil",state:"Various",country:"Brazil",geo:"South America",nb:3,tph:200,mw:50,type:"CFB (Andritz PowerFluid)",fuel:"Biomass / Bagasse",year:"2010-2022",role:"SUP",status:"Operating",cyclone:"External cyclone",emission:"Bag filter",tech:"Andritz has active South American market for biomass and cane residue CFB.",demech:"MEDIUM",reason:"Tropical environment; bagasse ash; 4-14 yr old range; good field for lightweight insulation",derincoat:"Cyclone body coating, bagasse duct lining, external insulation in tropical climate",src:"Andritz PowerFluid product references"},
+
+// ===== ADDITIONAL INDIA HIGH-VALUE PROJECTS =====
+{id:61,oem:"BHEL",plant:"SAIL Bhilai / JSW Steel CFBC CPP",customer:"Steel Authority of India (SAIL) / JSW Steel",industry:"Steel / Metal",city:"Bhilai / Toranagallu",state:"CG/KA",country:"India",geo:"India",nb:3,tph:300,mw:75,type:"CFBC",fuel:"Coal / BFG / Coke oven gas",year:"2010-2018",role:"EPC",status:"Operating",cyclone:"Hot Cyclone (BHEL design)",emission:"ESP",tech:"BHEL has supplied AFBC and CFBC boilers to SAIL under captive power program. Mixed fuel including blast furnace gas.",demech:"VERY HIGH",reason:"Steel plant with mixed corrosive gases; hot cyclone + blast furnace gas corrosion; 6-14 yr old; high maintenance frequency",derincoat:"Hot cyclone relining, BFG duct anti-corrosion lining, ESP transitions, external casing insulation",src:"BHEL annual reports / SAIL power plant records"},
+{id:62,oem:"Thermax / TBWES",plant:"Thermax 550 TPH CFBC (2 units — new order 2024)",customer:"[Undisclosed — 300 MW power plant]",industry:"Power Utility",city:"[India — location not disclosed]",state:"India",country:"India",geo:"India",nb:2,tph:550,mw:150,type:"CFBC (TBWES)",fuel:"Coal",year:"2024-2026",role:"SUP",status:"Under Execution",cyclone:"U-beam (B&W IR-CFB)",emission:"ESP + FGD [est]",tech:"Thermax (TBWES) received order in July 2024 for 2×550 TPH CFBC over 23 months. For a 300 MW power plant. Largest Thermax CFBC order.",demech:"MEDIUM",reason:"New order — design-in opportunity for Derincoat / insulation specification; U-beam wear coating spec at build stage",derincoat:"Specify Derincoat or equivalent at design stage for U-beam, furnace, cyclone, duct systems",src:"Thermax exchange filing July 2024; Fortune Business Insights market report"},
+{id:63,oem:"Sumitomo SHI FW",plant:"SFW Global Reference Portfolio (500+ CFBs)",customer:"Global utilities and industries across 40+ countries",industry:"Multiple",city:"Global",state:"Various",country:"Multiple",geo:"Multiple",nb:540,tph:300,mw:75,type:"CFB (subcritical + supercritical)",fuel:"Coal / Biomass / Waste / Pet coke / Lignite",year:"1980-2025",role:"Technology Licensor / SUP",status:"Operating",cyclone:"SFW external cyclone (proprietary)",emission:"Various (ESP, bag filter, SCR, FGD)",tech:"SFW (formerly Ahlstrom, then FW) has the world's largest CFB installed base at 550+ units totaling 36 GWe. Licensees include ISGEC (India), BHEL (India from 2022), and many others globally.",demech:"HIGH",reason:"550+ aging CFB installations globally; SFW cyclone design uses external refractory-lined cyclone in subcritical plants; massive global retrofit opportunity",derincoat:"SFW cyclone relining (global scale); hot gas duct insulation; external boiler casing upgrades across 40+ countries",src:"BHEL/SFW TLA press release Dec 2022; SFW website; Power Info Today"},
+{id:64,oem:"Valmet",plant:"Valmet CFB (CYMIC) Global Portfolio",customer:"Global utilities and industries",industry:"Biomass / Power / Paper",city:"Global (Finland, Sweden, Germany, Japan, Taiwan)",state:"Various",country:"Multiple",geo:"Multiple",nb:60,tph:250,mw:60,type:"CFB (Valmet CYMIC)",fuel:"Biomass / Coal / RDF / Waste",year:"2000-2025",role:"SUP / EPC",status:"Operating / Under Execution",cyclone:"CYMIC external cyclone",emission:"Flue gas cleaning system (SCR + bag filter)",tech:"Valmet CFB (CYMIC) is advanced technology. Key European biomass markets: Finland, Sweden, Poland. Japan biomass market growing.",demech:"MEDIUM",reason:"Advanced technology; new-generation CFB; cyclone and duct insulation quality is critical for high-temperature steam conditions",derincoat:"External cyclone insulation (high steam parameters), duct systems, bag filter connections",src:"Valmet product pages; multiple press releases 2021-2025"},
+{id:65,oem:"Doosan / Mitsubishi",plant:"Korean and international supercritical CFB plants",customer:"KEPCO / Korean utilities / International",industry:"Power Utility",city:"South Korea / Poland / Other",state:"Various",country:"South Korea / Poland",geo:"Multiple",nb:5,tph:1000,mw:500,type:"Supercritical CFBC (once-through)",fuel:"Coal / Biomass",year:"2012-2022",role:"EPC",status:"Operating",cyclone:"External cyclone (supercritical design, lower refractory due to water walls)",emission:"ESP + FGD + SCR",tech:"Doosan (Korea) and Mitsubishi Power are leaders in supercritical CFB for large utility scale. Samcheok Green Power (Korea) features large CFBC units.",demech:"MEDIUM",reason:"Large supercritical units; less refractory (membrane walls) but large duct/emission systems; high-value retrofit contracts",derincoat:"Duct insulation systems, ESP transitions, external thermal insulation panels",src:"Industry reports; Doosan / Mitsubishi technical papers"},
+{id:66,oem:"GE Power / Alstom",plant:"Gardanne CFBC (250 MW — France, world's first large)",customer:"GDF Suez / Engie",industry:"Power Utility",city:"Gardanne",state:"Provence",country:"France",geo:"Europe",nb:1,tph:680,mw:250,type:"CFBC (Alstom design)",fuel:"Lignite / Coal",year:"1996",role:"EPC",status:"Retrofit Candidate",cyclone:"Hot cyclone (Alstom design)",emission:"ESP + FGD",tech:"World's first 250 MW CFBC. In operation since April 1996. Referenced by BHEL as benchmark. 28+ years old. Major retrofit candidate.",demech:"VERY HIGH",reason:"World's oldest large CFBC; 28+ yr old; hot cyclone with massive refractory; all systems in need of upgrade",derincoat:"Hot cyclone complete relining (most critical); FGD duct coatings; furnace refractory; all insulation systems aged",src:"BHEL domain-b.com Jan 2012 reference; domain-b.com"},
+{id:67,oem:"BHEL / Harbin / Dongfang",plant:"Chinese manufacturer-origin CFBC plants in India",customer:"Various Indian IPPs and state utilities",industry:"Power Utility / Captive",city:"Multiple Indian states",state:"Various",country:"India",geo:"India",nb:15,tph:300,mw:75,type:"CFBC (Chinese OEM)",fuel:"Coal / Lignite",year:"2008-2016",role:"EPC",status:"Operating",cyclone:"External hot cyclone (Chinese design — heavy refractory)",emission:"ESP",tech:"Multiple Indian projects used Chinese CFBC technology (Harbin, Dongfang) during the IPP boom (2008-2015). Hot cyclone design with thick refractory lining. Variable quality.",demech:"VERY HIGH",reason:"Chinese hot cyclone design has notoriously high refractory failure rate; 8-16 yr old; IPP customer base actively seeking maintenance",derincoat:"Hot cyclone complete refractory replacement (highest priority in Indian market); furnace floor tiles; loop seal castables; duct system refractory",src:"Industry knowledge; multiple CFBC seminar references India"},
+{id:68,oem:"Thermax / TBWES",plant:"Various TBWES industrial CFBC — tyre, pharma, chemical",customer:"Apollo Tyres / Aurobindo Pharma / GPCL / Various",industry:"Chemical / Petrochemical",city:"Multiple — TN, AP, GJ, MH",state:"Various",country:"India",geo:"India",nb:8,tph:150,mw:37,type:"CFBC (B&W IR-CFB)",fuel:"Coal / Pet coke / Biomass",year:"2005-2020",role:"SUP",status:"Operating",cyclone:"U-beam separator",emission:"ESP",tech:"TBWES has 360+ boilers globally. Key Indian references include tyre, pharmaceutical, chemical industries.",demech:"HIGH",reason:"Diverse industrial customers; pet coke and mixed fuels; 4-18 yr old range; B&W licensee product well-maintained",derincoat:"U-beam wear coating, ESP inlet duct, external insulation upgrades",src:"TBWES website; Power Technology page"},
+{id:69,oem:"ISGEC",plant:"Aurobindo Pharma / Nirma / Welspun CFBC",customer:"Aurobindo Pharma / Nirma Ltd. / Welspun Corp.",industry:"Chemical / Petrochemical",city:"Hyderabad / Vadodara / Anjar",state:"AP/GJ/GJ",country:"India",geo:"India",nb:3,tph:150,mw:37,type:"CFBC",fuel:"Coal / Pet coke",year:"2010-2018",role:"SUP",status:"Operating",cyclone:"Compact Separator",emission:"ESP",tech:"Listed as ISGEC repeat customers. Chemical and textile industries.",demech:"HIGH",reason:"Pharma/chemical environment = corrosive flue gas; pet coke firing; 6-14 yr old",derincoat:"Cyclone lining, ESP transitions, external boiler casing anti-corrosion",src:"ISGEC CFBC page"},
+{id:70,oem:"TKIL / Thyssenkrupp",plant:"TKIL Pipeline (10+ boilers under execution)",customer:"[Undisclosed — multiple customers]",industry:"Multiple",city:"India — various",state:"Various",country:"India",geo:"India",nb:10,tph:200,mw:50,type:"CFBC",fuel:"Coal / Multi-fuel",year:"2022-2026",role:"EPC/SUP",status:"Under Execution",cyclone:"Cold Cyclone (in-house)",emission:"ESP",tech:"TKIL website confirms 10+ CFBC boilers under execution (as of 2024). Specific customers not disclosed.",demech:"MEDIUM",reason:"New orders — opportunity to specify Derincoat / lightweight insulation at design stage",derincoat:"Design-in opportunity for cyclone lining, duct insulation, furnace panels",src:"TKIL website (tkil.com) 2024"},
+{id:71,oem:"Various / AFBC legacy",plant:"AFBC legacy plants in sugar, textile, paper — India",customer:"~1000+ small and medium industry plants",industry:"Sugar / Textile / Paper / Food",city:"Pan-India (MH, KA, TN, AP, UP, GJ)",state:"Various",country:"India",geo:"India",nb:100,tph:60,mw:15,type:"AFBC",fuel:"Coal / Bagasse / Rice husk / Cotton stalk",year:"1990-2010",role:"Various",status:"Retrofit Candidate",cyclone:"External cyclone / U-beam",emission:"ESP / Bag filter",tech:"~1000+ AFBC boilers in India from various OEMs (Cethar, Cheema, IBL, Veesons, Thermax, local manufacturers). Many >20 years old with original insulation degraded.",demech:"HIGH",reason:"20+ yr old plants; original insulation failed; repeated patching; biomass / bagasse ash erosion; no OEM support",derincoat:"External insulation replacement (primary application), duct lagging, cyclone body coating; HIGHEST volume market for Derincoat spray application",src:"Industry census; BHEL CPP division references; Cethar profile"},
+{id:72,oem:"TKIL / Thyssenkrupp",plant:"Jaiprakash Associates / Wonder Cement CPP",customer:"Jaiprakash Associates / Wonder Cement / Penna Cement",industry:"Cement",city:"Multiple — UP, HP, MP, RJ, AP",state:"Various",country:"India",geo:"India",nb:4,tph:115,mw:25,type:"CFBC",fuel:"Coal / Pet coke",year:"2005-2016",role:"EPC",status:"Operating",cyclone:"Cold Cyclone",emission:"ESP",tech:"Multiple cement CPPs for Jaypee group, Wonder Cement, Penna Cement (all listed TKIL references).",demech:"HIGH",reason:"Multi-plant cement groups; pet coke firing; aging boilers; excellent multi-site contract opportunity",derincoat:"Cyclone linings, pet coke system ducts, ESP transitions across multiple sites",src:"TKIL Cement Division reference list"}
+];
+
+let currentTab = 'all';
+let filtered = [...data];
+
+function applyF(){
+  const geo=document.getElementById('fGeo').value;
+  const oem=document.getElementById('fOEM').value;
+  const ind=document.getElementById('fInd').value;
+  const status=document.getElementById('fStatus').value;
+  const demech=document.getElementById('fDemech').value;
+  const cap=document.getElementById('fCap').value;
+  const search=document.getElementById('fSearch').value.toLowerCase();
+
+  filtered = data.filter(p=>{
+    if(geo && p.geo!==geo) return false;
+    if(oem && !p.oem.includes(oem.split(' ')[0])) return false;
+    if(ind && p.industry!==ind) return false;
+    if(status && p.status!==status) return false;
+    if(demech && p.demech!==demech) return false;
+    const t=p.tph;
+    if(cap==='xl' && t<400) return false;
+    if(cap==='l' && (t<150||t>=400)) return false;
+    if(cap==='m' && (t<80||t>=150)) return false;
+    if(cap==='s' && t>=80) return false;
+    if(search && !(p.plant.toLowerCase().includes(search)||p.customer.toLowerCase().includes(search)||p.city.toLowerCase().includes(search)||p.oem.toLowerCase().includes(search))) return false;
+    if(currentTab==='india' && p.geo!=='India') return false;
+    if(currentTab==='sea' && p.geo!=='Southeast Asia') return false;
+    if(currentTab==='me' && p.geo!=='Middle East') return false;
+    if(currentTab==='africa' && p.geo!=='Africa') return false;
+    if(currentTab==='europe' && p.geo!=='Europe') return false;
+    if(currentTab==='namerica' && p.geo!=='North America') return false;
+    if(currentTab==='large' && p.tph<150) return false;
+    if(currentTab==='old' && !(p.year.includes('199')||p.year.includes('200')||p.year.includes('2010')||p.year.includes('2011')||p.year.includes('2012')||p.year.includes('2013')||p.year.includes('2014'))) return false;
+    if(currentTab==='cement' && !(p.industry==='Cement'||p.industry==='Steel / Metal')) return false;
+    if(currentTab==='sugar' && !(p.industry==='Sugar / Agro'||p.industry==='Captive Power')) return false;
+    if(currentTab==='demech' && p.demech!=='VERY HIGH' && p.demech!=='HIGH') return false;
+    return true;
+  });
+  renderTable();
+}
+
+function switchTab(tab,el){
+  currentTab=tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  applyF();
+}
+
+function resetF(){
+  ['fGeo','fOEM','fInd','fStatus','fDemech','fCap'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fSearch').value='';
+  currentTab='all';
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab')[0].classList.add('active');
+  filtered=[...data];
+  renderTable();
+}
+
+function statusClass(s){
+  if(s==='Operating') return 'b-op';
+  if(s==='Under Execution') return 'b-ex';
+  if(s==='Planned') return 'b-pl';
+  if(s==='Shutdown') return 'b-sd';
+  if(s==='Retrofit Candidate') return 'b-ret';
+  return '';
+}
+function roleClass(r){
+  if(r==='EPC') return 'b-epc';
+  if(r==='SUP') return 'b-sup';
+  if(r.includes('Lic')) return 'b-lic';
+  return 'b-eng';
+}
+function demechClass(d){
+  if(d==='VERY HIGH') return 'b-vh';
+  if(d==='HIGH') return 'b-h';
+  if(d==='MEDIUM') return 'b-m';
+  return 'b-l';
+}
+
+function renderTable(){
+  const tbody=document.getElementById('tblBody');
+  const nr=document.getElementById('noResults');
+  document.getElementById('rowCount').textContent=filtered.length+' projects';
+  if(filtered.length===0){tbody.innerHTML='';nr.style.display='block';return;}
+  nr.style.display='none';
+  tbody.innerHTML=filtered.map((p,i)=>`
+    <tr class="${i%2===0?'':'odd'} geo-${p.geo==='India'?'india':p.geo==='Southeast Asia'?'sea':p.geo==='Middle East'?'me':p.geo==='Africa'?'africa':p.geo==='Europe'?'europe':'namerica'}">
+      <td style="color:#888">${p.id}</td>
+      <td class="b" style="min-width:120px">${p.oem}</td>
+      <td class="b" style="min-width:160px">${p.plant}</td>
+      <td style="min-width:140px">${p.customer}</td>
+      <td><span class="badge" style="background:#f0f4fa;color:#1a3a5c">${p.industry}</span></td>
+      <td style="min-width:120px">${p.city}, ${p.state}<br><span class="note">${p.country}</span></td>
+      <td><span class="badge" style="background:#e8f5e9;color:#155724">${p.geo}</span></td>
+      <td style="text-align:center">${p.nb}</td>
+      <td style="text-align:center;font-weight:700">${p.tph}</td>
+      <td style="text-align:center">${p.mw}</td>
+      <td style="min-width:120px;font-size:10px">${p.type}</td>
+      <td style="min-width:100px;font-size:10px">${p.fuel}</td>
+      <td style="min-width:80px">${p.year}</td>
+      <td><span class="badge ${roleClass(p.role)}">${p.role}</span></td>
+      <td><span class="badge ${statusClass(p.status)}">${p.status}</span></td>
+      <td style="font-size:10px;min-width:120px">${p.cyclone}</td>
+      <td style="font-size:10px">${p.emission}</td>
+      <td style="font-size:10px;min-width:200px;color:#444">${p.tech}</td>
+      <td><span class="badge ${demechClass(p.demech)}">${p.demech}</span></td>
+      <td class="demech-cell">${p.reason}</td>
+      <td class="demech-cell" style="color:#c82333">${p.derincoat}</td>
+      <td style="font-size:10px;color:#888;min-width:100px">${p.src}</td>
+    </tr>
+  `).join('');
+}
+
+renderTable();
+</script>
+</body>
+</html>
